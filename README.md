@@ -1,2 +1,15 @@
 # OSN-analysis-dashboard
 Project in IMT4807.
+
+## How to run the project?
+
+1. Clone or download this repository to your local machine.
+2. Install all the libraries mentioned in the requirements.txt file with the command `pip3 install -r backend/requirements.txt`
+3. Create a file name `config.ini` in backend folder
+4. Paste the code in `config.ini` and insert key deatils which you will get keys here [developer.twitter.com](https://developer.twitter.com/en)
+```
+[twitter]
+
+api_key = Your Keys
+api_key_secret = Your Keys
+```
