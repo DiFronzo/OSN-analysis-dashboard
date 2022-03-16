@@ -30,5 +30,17 @@ def get_analysis(score: float) -> str:
         return 'Positive'
 
 
-def graph_sentiment(data) -> pd.DataFrame:
+def graph_sentiment(data: pd.DataFrame) -> pd.DataFrame:
     return data["Analysis"].value_counts().reset_index().sort_values(by="index", ascending=False)
+
+
+def graph_pos_words(data: pd.DataFrame) -> str:
+    return ' '.join([word for word in data['Tweets'][data['Analysis'] == "Positive"]])
+
+
+def graph_nut_words(data: pd.DataFrame) -> str:
+    return ' '.join([word for word in data['Tweets'][data['Analysis'] == "Neutral"]])
+
+
+def graph_neg_words(data: pd.DataFrame) -> str:
+    return ' '.join([word for word in data['Tweets'][data['Analysis'] == "Negative"]])

@@ -70,10 +70,20 @@ class Preprocessing:
         text = re.sub("\n", "", text)  # Removing hyperlink
         text = re.sub(":", "", text)  # Removing hyperlink
         text = re.sub("_", "", text)  # Removing hyperlink
+        text = re.sub("h(m)+", "", text)  # Removing the word 'hmm' and it's variants
         text = text.replace("&amp;", "&")  # Replace &amp; with &
         text = self.emoji_pattern.sub(r'', text)
+
+        slang = {'luv': 'love', 'wud': 'would', 'lyk': 'like', 'wateva': 'whatever', 'ttyl': 'talk to you later',
+                 'kul': 'cool', 'fyn': 'fine', 'omg': 'oh my god', 'fam': 'family', 'bruh': 'brother',
+                 'cud': 'could', 'fud': 'food', 'lol': 'laughing out loud', 'rly': 'really'}  ## Need a huge dictionary
+        text = text.split()
+        reformed = [slang[word] if word in slang else word for word in text]
+        text = " ".join(reformed)
+
         return text
 
+    # TODO! Cache this function
     def preprocessing_data(self, word_query: str, number_of_tweets: int, function_option="",
                            lang_opt="en") -> pd.DataFrame:
         """Finds real-time tweets and finds polarity
@@ -96,7 +106,7 @@ class Preprocessing:
         """
 
         posts: ItemIterator
-        # TODO! add start date of the search if needed.
+        # TODO! add start date of the search if needed and make a option for "-filter:.."
         if function_option.lower() == "username":
             posts = tweepy.Cursor(self.api.user_timeline, screen_name=word_query, count=200,
                                   tweet_mode="extended").items(
@@ -129,7 +139,7 @@ class Preprocessing:
         data['Analysis'] = data['Polarity'].apply(get_analysis)
 
         # word counter for top 15
-        # TODO! remove word_query
+        # TODO! remove the word_query word sent by the user
         words = [tweet.lower().split() for tweet in data['Tweets']]
         all_words = list(itertools.chain(*words))
         counts = collections.Counter(all_words)
