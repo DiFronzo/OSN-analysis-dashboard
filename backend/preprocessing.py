@@ -1,4 +1,6 @@
 import configparser
+import itertools
+import collections
 import re
 
 import pandas as pd
@@ -41,6 +43,7 @@ class Preprocessing:
 
         auth = tweepy.OAuthHandler(api_key, api_key_secret)
         self.api = tweepy.API(auth)
+        self.words = []
 
     def __enter__(self):
         return self
@@ -67,6 +70,7 @@ class Preprocessing:
         text = re.sub("\n", "", text)  # Removing hyperlink
         text = re.sub(":", "", text)  # Removing hyperlink
         text = re.sub("_", "", text)  # Removing hyperlink
+        text = text.replace("&amp;", "&")  # Replace &amp; with &
         text = self.emoji_pattern.sub(r'', text)
         return text
 
@@ -123,5 +127,13 @@ class Preprocessing:
         data['Polarity'] = data['Tweets'].apply(get_polarity)
 
         data['Analysis'] = data['Polarity'].apply(get_analysis)
+
+        # word counter for top 15
+        # TODO! remove word_query
+        words = [tweet.lower().split() for tweet in data['Tweets']]
+        all_words = list(itertools.chain(*words))
+        counts = collections.Counter(all_words)
+        self.words = pd.DataFrame(counts.most_common(15),
+                                  columns=['words', 'count'])
 
         return data

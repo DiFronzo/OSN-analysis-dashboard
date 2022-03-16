@@ -4,8 +4,6 @@ import pandas as pd
 from textblob import TextBlob
 
 
-# TODO! REMOVE  &amp;
-
 def extract_mentions(text: str) -> list:
     return re.findall("(@[A-Za-z0–9\d\w]+)", text)
 
