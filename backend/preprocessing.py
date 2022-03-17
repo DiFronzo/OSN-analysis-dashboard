@@ -36,7 +36,7 @@ class Preprocessing:
             self
     ):
         config = configparser.ConfigParser()
-        config.read("config.ini")
+        config.read("../config.ini")
 
         api_key = config["twitter"]["api_key"]
         api_key_secret = config["twitter"]["api_key_secret"]

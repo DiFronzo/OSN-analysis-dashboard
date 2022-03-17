@@ -38,7 +38,7 @@ def graph_pos_words(data: pd.DataFrame) -> str:
     return ' '.join([word for word in data['Tweets'][data['Analysis'] == "Positive"]])
 
 
-def graph_nut_words(data: pd.DataFrame) -> str:
+def graph_neu_words(data: pd.DataFrame) -> str:
     return ' '.join([word for word in data['Tweets'][data['Analysis'] == "Neutral"]])
 
 
