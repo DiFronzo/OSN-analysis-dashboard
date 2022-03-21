@@ -14,7 +14,7 @@ Project in IMT4807.
 api_key = Your Keys
 api_key_secret = Your Keys
 ```
-5. `$ python backend/API/app.py`
+5. `$ python backend/app.py`
 6. Visit http://127.0.0.1:5000/docs
 
 ### Frondend

@@ -7,7 +7,7 @@ import pandas as pd
 import tweepy
 from tweepy.cursor import ItemIterator
 
-from utils import extract_mentions, extract_hastag, get_analysis, get_subjectivity, get_polarity
+from processing.utils import extract_mentions, extract_hastag, get_analysis, get_subjectivity, get_polarity
 
 
 class Preprocessing:
@@ -36,7 +36,7 @@ class Preprocessing:
             self
     ):
         config = configparser.ConfigParser()
-        config.read("../config.ini")
+        config.read("config.ini")
 
         api_key = config["twitter"]["api_key"]
         api_key_secret = config["twitter"]["api_key_secret"]
