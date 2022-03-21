@@ -19,6 +19,7 @@ class RawDataParameter(Schema):
 class RawDataQueryNumOfTweets(Schema):
     number_of_tweets = fields.Int()
 
+
 @app.route('/raw_data/<word_query>', methods=['GET'])
 def raw_data(word_query):
     """Get List of Raw Tweets
