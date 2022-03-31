@@ -7,6 +7,7 @@ from flask import Flask, jsonify, render_template, send_from_directory, request
 from marshmallow import Schema, fields
 
 from preprocessing import Preprocessing
+from processing import utils
 
 # https://github.com/marshmallow-code/apispec
 app = Flask(__name__, template_folder='swagger/templates')
@@ -18,6 +19,37 @@ class RawDataParameter(Schema):
 
 class RawDataQueryNumOfTweets(Schema):
     number_of_tweets = fields.Int()
+
+
+@app.route('/pie/<word_query>', methods=['GET'])
+def polarity(word_query):
+    """Get List of Sentiments for Tweets
+    ---
+    get:
+        description: Get List of Sentiments for Tweets
+        parameters:
+        - in: path
+          schema: RawDataParameter
+        responses:
+            200:
+              content:
+                application/json:
+                  schema: PolarityListResponseSchema
+    """
+    r = Preprocessing()
+    data = r.preprocessing_data(word_query, 10, "", "en")
+    get_graph_sentiment = utils.graph_sentiment(data)
+    rows = json.loads(get_graph_sentiment.to_json(orient="records"))
+    return PolarityListResponseSchema().dump({"polarity": rows})
+
+
+class PolaritySchema(Schema):
+    index = fields.Str()
+    Analysis = fields.Int()
+
+
+class PolarityListResponseSchema(Schema):
+    polarity = fields.List(fields.Nested(PolaritySchema))
 
 
 @app.route('/raw_data/<word_query>', methods=['GET'])
@@ -105,6 +137,7 @@ class RawDataListResponseSchema(Schema):
 # What to show on the docs page
 with app.test_request_context():
     spec.path(view=raw_data)
+    spec.path(view=polarity)
 
 
 @app.route("/docs")
