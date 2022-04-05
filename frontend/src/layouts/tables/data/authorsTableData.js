@@ -30,19 +30,22 @@ import avatar3 from "assets/images/avatar3.png";
 import avatar4 from "assets/images/avatar4.png";
 import avatar5 from "assets/images/avatar5.png";
 import avatar6 from "assets/images/avatar6.png";
+import elon from "assets/images/elon.jpg";
+import pdp from "assets/images/pdp.jpg"
 
-function Author({ image, name, email }) {
+
+function Author({ image, tweet, name }) {
   return (
     <VuiBox display="flex" alignItems="center" px={1} py={0.5}>
       <VuiBox mr={2}>
-        <VuiAvatar src={image} alt={name} size="sm" variant="rounded" />
+        <VuiAvatar src={image} alt={tweet} size="sm" variant="rounded" />
       </VuiBox>
       <VuiBox display="flex" flexDirection="column">
         <VuiTypography variant="button" color="white" fontWeight="medium">
-          {name}
+          {tweet}
         </VuiTypography>
         <VuiTypography variant="caption" color="text">
-          {email}
+          {name}
         </VuiTypography>
       </VuiBox>
     </VuiBox>
@@ -62,42 +65,63 @@ function Function({ job, org }) {
   );
 }
 
+function Polarity({status, percentage}) {
+  return (
+    <VuiBox flexDirection="column">
+      <VuiBadge
+        variant="standard"
+        badgeContent={status}
+        color={percentage.color}
+        size="xl"
+        container
+        sx={({ palette: { white, error }, borders: { borderRadius, borderWidth } }) => ({
+          background: error.main,
+          border: `${borderWidth[1]} solid ${error.main}`,
+          borderRadius: borderRadius.md,
+          color: white.main,
+       })}
+      />
+      {"  "}
+      <VuiTypography variant="button" color={percentage.color} fontWeight="bold" fontSize="100px">
+        {"("+percentage.text+")"}
+      </VuiTypography>
+    </VuiBox>
+  );
+}
+
+let percentage22 = {text: "-0.8", color: "error"}
 export default {
   columns: [
     { name: "author", align: "left" },
-    { name: "function", align: "left" },
-    { name: "status", align: "center" },
-    { name: "employed", align: "center" },
-    { name: "action", align: "center" },
+    { name: "polarity", align: "left" },
+    { name: "location", align: "left" },
+    { name: "polarity value", align: "center" },
+    { name: "date", align: "center" },
+    { name: "subjectivity", align: "center" },
   ],
 
   rows: [
     {
-      author: <Author image={avatar4} name="Esthera Jackson" email="esthera@simmmple.com" />,
-      function: <Function job="Manager" org="Organization" />,
-      status: (
-        <VuiBadge
-          variant="standard"
-          badgeContent="Online"
-          color="success"
-          size="xs"
-          container
-          sx={({ palette: { white, success }, borders: { borderRadius, borderWidth } }) => ({
-            background: success.main,
-            border: `${borderWidth[1]} solid ${success.main}`,
-            borderRadius: borderRadius.md,
-            color: white.main,
-          })}
-        />
+      author: <Author image="https://pbs.twimg.com/profile_images/1508918145620201476/dUPvH7Hn_normal.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: (
+        <VuiTypography variant="caption" color="white" fontWeight="medium">
+          California, US
+        </VuiTypography>
       ),
-      employed: (
+      "polarity value":(
+        <VuiTypography variant="caption" color="white" fontWeight="medium">
+         1
+        </VuiTypography>
+      ),
+      date: (
         <VuiTypography variant="caption" color="white" fontWeight="medium">
           23/04/18
         </VuiTypography>
       ),
-      action: (
-        <VuiTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          Edit
+      subjectivity: (
+        <VuiTypography variant="caption" color="white" fontWeight="medium">
+          0.9
         </VuiTypography>
       ),
     },

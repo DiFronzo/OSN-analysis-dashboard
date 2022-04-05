@@ -42,7 +42,7 @@ class Preprocessing:
         api_key_secret = config["twitter"]["api_key_secret"]
 
         auth = tweepy.OAuthHandler(api_key, api_key_secret)
-        self.api = tweepy.API(auth)
+        self.api = tweepy.API(auth, wait_on_rate_limit=True)
         self.words = []
 
     def __enter__(self):
@@ -117,30 +117,30 @@ class Preprocessing:
                                   tweet_mode="extended").items(
                 number_of_tweets)
 
-        data = pd.DataFrame([[tweet.full_text, tweet.created_at, tweet.user.location] for tweet in posts],
-                            columns=['Tweets', 'Date', "Location"])  # tweet.user.location
+        data = pd.DataFrame([[tweet.full_text, tweet.created_at, tweet.user.location, tweet.user.profile_image_url_https, tweet.user.screen_name] for tweet in posts],
+                            columns=['tweets', 'date', "location", "profile_img", "screen_name"])  # tweet.user.location
 
         if data.empty:
             return data
 
-        data["mentions"] = data["Tweets"].apply(extract_mentions)
-        data["hastags"] = data["Tweets"].apply(extract_hastag)
-        # data['links'] = data['Tweets'].str.extract('(https?:\/\/\S+)', expand=False).str.strip()
-        data['retweets'] = data['Tweets'].str.extract('(RT[\s@[A-Za-z0–9\d\w]+)', expand=False).str.strip()
+        data["mentions"] = data["tweets"].apply(extract_mentions)
+        data["hastags"] = data["tweets"].apply(extract_hastag)
+        # data['links'] = data['tweets'].str.extract('(https?:\/\/\S+)', expand=False).str.strip()
+        data['retweets'] = data['tweets'].str.extract('(RT[\s@[A-Za-z0–9\d\w]+)', expand=False).str.strip()
 
-        data['Tweets'] = data['Tweets'].apply(self.clean_txt)
+        data['tweets'] = data['tweets'].apply(self.clean_txt)
         discard = ["CNFTGiveaway", "GIVEAWAYPrizes", "Giveaway", "Airdrop", "GIVEAWAY", "makemoneyonline",
                    "affiliatemarketing", "FreeBitcoins"]
-        data = data[~data["Tweets"].str.contains('|'.join(discard))]
+        data = data[~data["tweets"].str.contains('|'.join(discard))]
 
-        data['Subjectivity'] = data['Tweets'].apply(get_subjectivity)
-        data['Polarity'] = data['Tweets'].apply(get_polarity)
+        data['subjectivity'] = data['tweets'].apply(get_subjectivity)
+        data['polarity'] = data['tweets'].apply(get_polarity)
 
-        data['Analysis'] = data['Polarity'].apply(get_analysis)
+        data['analysis'] = data['polarity'].apply(get_analysis)
 
         # word counter for top 15
         # TODO! remove the word_query word sent by the user
-        words = [tweet.lower().split() for tweet in data['Tweets']]
+        words = [tweet.lower().split() for tweet in data['tweets']]
         all_words = list(itertools.chain(*words))
         counts = collections.Counter(all_words)
         self.words = pd.DataFrame(counts.most_common(15),

@@ -32,10 +32,40 @@ import Table from "examples/Tables/Table";
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
+import data from "../dashboard/components/Projects/data";
+import { useState } from "react";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Icon from "@mui/material/Icon";
 
 function Tables() {
   const { columns, rows } = authorsTableData;
   const { columns: prCols, rows: prRows } = projectsTableData;
+
+  const [menu, setMenu] = useState(null);
+
+  const openMenu = ({ currentTarget }) => setMenu(currentTarget);
+  const closeMenu = () => setMenu(null);
+
+  const renderMenu = (
+    <Menu
+      id="simple-menu"
+      anchorEl={menu}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "left",
+      }}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={Boolean(menu)}
+      onClose={closeMenu}
+    >
+      <MenuItem onClick={closeMenu}>Download as CSV</MenuItem>
+      <MenuItem onClick={closeMenu}>Download as JSON</MenuItem>
+    </Menu>
+  );
 
   return (
     <DashboardLayout>
@@ -44,9 +74,17 @@ function Tables() {
         <VuiBox mb={3}>
           <Card>
             <VuiBox display="flex" justifyContent="space-between" alignItems="center" mb="22px">
-              <VuiTypography variant="lg" color="white">
-                Authors table
-              </VuiTypography>
+              <VuiBox mb="auto">
+                <VuiTypography variant="lg" color="white">
+                  Raw data table
+                </VuiTypography>
+              </VuiBox>
+              <VuiBox color="text" px={2}>
+                <Icon sx={{ cursor: "pointer", fontWeight: "bold" }} fontSize="small" onClick={openMenu}>
+                  more_vert
+                </Icon>
+              </VuiBox>
+              {renderMenu}
             </VuiBox>
             <VuiBox
               sx={{
@@ -66,29 +104,6 @@ function Tables() {
             </VuiBox>
           </Card>
         </VuiBox>
-        <Card>
-          <VuiBox display="flex" justifyContent="space-between" alignItems="center">
-            <VuiTypography variant="lg" color="white">
-              Projects table
-            </VuiTypography>
-          </VuiBox>
-          <VuiBox
-            sx={{
-              "& th": {
-                borderBottom: ({ borders: { borderWidth }, palette: { grey } }) =>
-                  `${borderWidth[1]} solid ${grey[700]}`,
-              },
-              "& .MuiTableRow-root:not(:last-child)": {
-                "& td": {
-                  borderBottom: ({ borders: { borderWidth }, palette: { grey } }) =>
-                    `${borderWidth[1]} solid ${grey[700]}`,
-                },
-              },
-            }}
-          >
-            <Table columns={prCols} rows={prRows} />
-          </VuiBox>
-        </Card>
       </VuiBox>
       <Footer />
     </DashboardLayout>
