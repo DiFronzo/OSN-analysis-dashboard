@@ -8,7 +8,8 @@
         "trailingComma": "all",
         "tabWidth": 2,
         "singleQuote": true,
-        "jsxBracketSameLine": true
+        "jsxBracketSameLine": true,
+        "endOfLine": "auto"
       }
     ],
     "react/jsx-filename-extension": [
@@ -23,6 +24,7 @@
         "namedComponents": "arrow-function",
         "unnamedComponents": "arrow-function"
       }
-    ]
+    ],
+    "react/jsx-props-no-spreading": 0
   }
 }

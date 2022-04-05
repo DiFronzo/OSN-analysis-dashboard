@@ -1,3 +1,3 @@
-import Table from './SearchBox';
+import SearchBox from './SearchBox';
 
-export default Table;
+export default SearchBox;

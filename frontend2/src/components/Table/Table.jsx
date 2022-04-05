@@ -1,5 +1,6 @@
+import React from 'react';
 import './Table.module.css';
 
-const Table = () => <></>;
+const Table = () => <>Table</>;
 
 export default Table;
