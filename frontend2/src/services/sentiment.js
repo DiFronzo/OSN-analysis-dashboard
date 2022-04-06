@@ -8,9 +8,9 @@ const getRawData = async () => {
   }
 };
 
-const getPieData = async () => {
+const getPieData = async (query) => {
   try {
-    return await http.get(`/pie`);
+    return await http.get(`/pie/${query}`);
   } catch (err) {
     return err;
   }
