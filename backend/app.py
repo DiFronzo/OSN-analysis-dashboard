@@ -5,12 +5,14 @@ from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
 from flask import Flask, jsonify, render_template, send_from_directory, request
 from marshmallow import Schema, fields
+from flask_cors import CORS
 
 from preprocessing import Preprocessing
 from processing import utils
 
 # https://github.com/marshmallow-code/apispec
 app = Flask(__name__, template_folder='swagger/templates')
+CORS(app)
 
 
 class RawDataParameter(Schema):
