@@ -6,7 +6,7 @@ import AdvancedOptions from '../AdvancedOptions';
 const SearchBox = () => {
   const [search, setSearch] = useState('');
   const [amount, setAmount] = useState('100');
-  const [region, setRegion] = useState('');
+  const [region, setRegion] = useState('Worldwide');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -16,16 +16,18 @@ const SearchBox = () => {
   useEffect(() => {
     setSearch(searchParams.get('query') || '');
     setAmount(searchParams.get('amount') || '100');
-    setRegion(searchParams.get('region') || '');
+    setRegion(searchParams.get('region') || 'Worldwide');
     setFrom(searchParams.get('from') || '');
     setTo(searchParams.get('to') || '');
   }, [setSearch, setAmount, setRegion, setFrom, setTo, searchParams]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    navigate(
-      `/dashboard?query=${search}&amount=${amount}&region=${region}&from=${from}&to=${to}`,
-    );
+    let path = `/dashboard?query=${search}`;
+    if (showAdvanced) {
+      path = `${path}&amount=${amount}&region=${region}&from=${from}&to=${to}`;
+    }
+    navigate(path);
   };
 
   const handleChange = (e) => setSearch(e.target.value);
