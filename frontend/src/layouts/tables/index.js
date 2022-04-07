@@ -31,14 +31,56 @@ import Table from "examples/Tables/Table";
 
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
+import Author from "layouts/tables/data/authorsTableData";
+import Polarity from "layouts/tables/data/authorsTableData";
+import StandardText from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
 import data from "../dashboard/components/Projects/data";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Icon from "@mui/material/Icon";
 
+
+export function getTweet() {
+  return fetch('http://127.0.0.1:5000/raw_data/Trump?number_of_tweets=10&function_option=&lang_opt=en')
+    .then(data => data.json())
+}
+
+
 function Tables() {
+  const [list, setList] = useState([]);
+
+  useEffect(() => {
+    // declare the async data fetching function
+    const fetchData = async () => {
+      // get the data from the api
+      const data = await fetch('http://127.0.0.1:5000/raw_data/Trump?number_of_tweets=10&function_option=&lang_opt=en');
+      // convert the data to json
+      const json = await data.json();
+      let percentage22 = {text: "-0.8", color: "error"}
+      let result = await json.raw_data.map((item) => {
+        return {
+          author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg"
+                          tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing"
+                          name="elonmusk" />,
+          polarity: <Polarity status="Negative" percentage={percentage22} />,
+          location: <StandardText text="California, US" />,
+          polarity_val: <StandardText text="1" />,
+          date: <StandardText text="23/04/18" />,
+          subjectivity: <StandardText text="0.9" />
+        }}
+      )
+
+      // set state with the result
+      setList(result);
+    }
+
+    // call the function
+    fetchData()
+      // make sure to catch any error
+      .catch(console.error);
+  }, [])
   const { columns, rows } = authorsTableData;
   const { columns: prCols, rows: prRows } = projectsTableData;
 
@@ -100,7 +142,7 @@ function Tables() {
                 },
               }}
             >
-              <Table columns={columns} rows={rows} />
+              {list.length > 0 ? (<Table columns={columns} rows={rows} /> ) : (<p>shit</p>) }
             </VuiBox>
           </Card>
         </VuiBox>

@@ -23,16 +23,10 @@ import VuiTypography from "components/VuiTypography";
 import VuiAvatar from "components/VuiAvatar";
 import VuiBadge from "components/VuiBadge";
 
-// Images
-import avatar1 from "assets/images/avatar1.png";
-import avatar2 from "assets/images/avatar2.png";
-import avatar3 from "assets/images/avatar3.png";
-import avatar4 from "assets/images/avatar4.png";
-import avatar5 from "assets/images/avatar5.png";
-import avatar6 from "assets/images/avatar6.png";
-import elon from "assets/images/elon.jpg";
-import pdp from "assets/images/pdp.jpg"
-
+function truncString(str, max, add){
+  add = add || '...';
+  return (typeof str === 'string' && str.length > max ? str.substring(0,max)+add : str);
+}
 
 function Author({ image, tweet, name }) {
   return (
@@ -42,25 +36,12 @@ function Author({ image, tweet, name }) {
       </VuiBox>
       <VuiBox display="flex" flexDirection="column">
         <VuiTypography variant="button" color="white" fontWeight="medium">
-          {tweet}
+          {truncString(tweet,79, "...")}
         </VuiTypography>
         <VuiTypography variant="caption" color="text">
           {name}
         </VuiTypography>
       </VuiBox>
-    </VuiBox>
-  );
-}
-
-function Function({ job, org }) {
-  return (
-    <VuiBox display="flex" flexDirection="column">
-      <VuiTypography variant="caption" fontWeight="medium" color="white">
-        {job}
-      </VuiTypography>
-      <VuiTypography variant="caption" color="text">
-        {org}
-      </VuiTypography>
     </VuiBox>
   );
 }
@@ -89,183 +70,402 @@ function Polarity({status, percentage}) {
   );
 }
 
+function StandardText({ text }) {
+  return (
+    <VuiTypography variant="caption" color="white" fontWeight="medium">
+      {text}
+    </VuiTypography>
+  );
+}
+
 let percentage22 = {text: "-0.8", color: "error"}
 export default {
   columns: [
     { name: "author", align: "left" },
     { name: "polarity", align: "left" },
     { name: "location", align: "left" },
-    { name: "polarity value", align: "center" },
+    { name: "polarity_val", align: "center" },
     { name: "date", align: "center" },
     { name: "subjectivity", align: "center" },
   ],
-
   rows: [
     {
-      author: <Author image="https://pbs.twimg.com/profile_images/1508918145620201476/dUPvH7Hn_normal.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
       polarity: <Polarity status="Negative" percentage={percentage22} />,
-      location: (
-        <VuiTypography variant="caption" color="white" fontWeight="medium">
-          California, US
-        </VuiTypography>
-      ),
-      "polarity value":(
-        <VuiTypography variant="caption" color="white" fontWeight="medium">
-         1
-        </VuiTypography>
-      ),
-      date: (
-        <VuiTypography variant="caption" color="white" fontWeight="medium">
-          23/04/18
-        </VuiTypography>
-      ),
-      subjectivity: (
-        <VuiTypography variant="caption" color="white" fontWeight="medium">
-          0.9
-        </VuiTypography>
-      ),
+      location: <StandardText text="California, US" />,
+      polarity_val:<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
     },
     {
-      author: <Author image={avatar2} name="Alexa Liras" email="alexa@simmmple.com" />,
-      function: <Function job="Programator" org="Developer" />,
-      status: (
-        <VuiBadge
-          variant="standard"
-          badgeContent="Offline"
-          size="xs"
-          container
-          sx={({ palette: { white }, borders: { borderRadius, borderWidth } }) => ({
-            background: "unset",
-            border: `${borderWidth[1]} solid ${white.main}`,
-            borderRadius: borderRadius.md,
-            color: white.main,
-          })}
-        />
-      ),
-      employed: (
-        <VuiTypography variant="caption" color="white" fontWeight="medium">
-          11/01/19
-        </VuiTypography>
-      ),
-      action: (
-        <VuiTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          Edit
-        </VuiTypography>
-      ),
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
     },
     {
-      author: <Author image={avatar3} name="Laurent Michael" email="laurent@simmmple.com" />,
-      function: <Function job="Executive" org="Projects" />,
-      status: (
-        <VuiBadge
-          variant="standard"
-          badgeContent="Online"
-          color="success"
-          size="xs"
-          container
-          sx={({ palette: { white, success }, borders: { borderRadius, borderWidth } }) => ({
-            background: success.main,
-            border: `${borderWidth[1]} solid ${success.main}`,
-            borderRadius: borderRadius.md,
-            color: white.main,
-          })}
-        />
-      ),
-      employed: (
-        <VuiTypography variant="caption" color="white" fontWeight="medium">
-          19/09/17
-        </VuiTypography>
-      ),
-      action: (
-        <VuiTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          Edit
-        </VuiTypography>
-      ),
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
     },
     {
-      author: <Author image={avatar1} name="Freduardo Hill" email="freduardo@simmmple.com" />,
-      function: <Function job="Programator" org="Developer" />,
-      status: (
-        <VuiBadge
-          variant="standard"
-          badgeContent="Online"
-          color="success"
-          size="xs"
-          container
-          sx={({ palette: { white, success }, borders: { borderRadius, borderWidth } }) => ({
-            background: success.main,
-            border: `${borderWidth[1]} solid ${success.main}`,
-            borderRadius: borderRadius.md,
-            color: white.main,
-          })}
-        />
-      ),
-      employed: (
-        <VuiTypography variant="caption" color="white" fontWeight="medium">
-          24/12/08
-        </VuiTypography>
-      ),
-      action: (
-        <VuiTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          Edit
-        </VuiTypography>
-      ),
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
     },
     {
-      author: <Author image={avatar5} name="Daniel Thomas" email="daniel@simmmple.com" />,
-      function: <Function job="Manager" org="Executive" />,
-      status: (
-        <VuiBadge
-          variant="standard"
-          badgeContent="Offline"
-          size="xs"
-          container
-          sx={({ palette: { white }, borders: { borderRadius, borderWidth } }) => ({
-            background: "unset",
-            border: `${borderWidth[1]} solid ${white.main}`,
-            borderRadius: borderRadius.md,
-            color: white.main,
-          })}
-        />
-      ),
-      employed: (
-        <VuiTypography variant="caption" color="white" fontWeight="medium">
-          04/10/21
-        </VuiTypography>
-      ),
-      action: (
-        <VuiTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          Edit
-        </VuiTypography>
-      ),
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
     },
     {
-      author: <Author image={avatar6} name="Mark Wilson" email="mark@simmmple.com" />,
-      function: <Function job="Programtor" org="Developer" />,
-      status: (
-        <VuiBadge
-          variant="standard"
-          badgeContent="Offline"
-          size="xs"
-          container
-          sx={({ palette: { white }, borders: { borderRadius, borderWidth } }) => ({
-            background: "unset",
-            border: `${borderWidth[1]} solid ${white.main}`,
-            borderRadius: borderRadius.md,
-            color: white.main,
-          })}
-        />
-      ),
-      employed: (
-        <VuiTypography variant="caption" color="white" fontWeight="medium">
-          14/09/20
-        </VuiTypography>
-      ),
-      action: (
-        <VuiTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          Edit
-        </VuiTypography>
-      ),
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
     },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg" tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing" name="elonmusk" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="California, US" />,
+      "polarity value":<StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.9" />,
+    },
+    {
+      author: <Author image="https://pbs.twimg.com/profile_images/766652495858896897/LjrJJB9a_400x400.jpg"
+                      tweet="I am absolutely stunned by this exchange. Especially as I look back a few years and recall how the Trump kids were assaulted by the media."
+                      name="donaldjtrumpjr" />,
+      polarity: <Polarity status="Negative" percentage={percentage22} />,
+      location: <StandardText text="New York, US" />,
+      "polarity value": <StandardText text="1" />,
+      date: <StandardText text="23/04/18" />,
+      subjectivity: <StandardText text="0.7" />,
+    }
   ],
 };
