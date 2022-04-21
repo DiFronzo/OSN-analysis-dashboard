@@ -30,12 +30,81 @@ import Footer from "examples/Footer";
 import Table from "examples/Tables/Table";
 
 // Data
-import authorsTableData from "layouts/tables/data/authorsTableData";
+import { Author, Polarity, StandardText, GetAnalysis } from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
+import { useEffect, useState } from "react";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Icon from "@mui/material/Icon";
 
 function Tables() {
-  const { columns, rows } = authorsTableData;
-  const { columns: prCols, rows: prRows } = projectsTableData;
+  const [list, setList] = useState([]);
+  const columns = [
+    { name: "tweet", align: "left" },
+    { name: "polarity", align: "left" },
+    { name: "location", align: "left" },
+    { name: "polarity_val", align: "center" },
+    { name: "date", align: "center" },
+    { name: "subjectivity", align: "center" },
+  ]
+
+  useEffect(() => {
+    // declare the async data fetching function
+    const fetchData = async () => {
+      // get the data from the api
+      const data = await fetch('http://127.0.0.1:5000/raw_data/Trump?number_of_tweets=20&function_option=&lang_opt=en');
+      // convert the data to json
+      const json = await data.json();
+      let result = await json.raw_data?.map((item) => {
+        let dateTime = new Date(item.date);
+        return {
+          tweet: <Author image={item.profile_img}
+                          tweet={item.tweets}
+                          name={item.screen_name} />,
+          polarity: <Polarity status={GetAnalysis(parseFloat(item.polarity))} />,
+          location: <StandardText text={item.location} />,
+          polarity_val: <StandardText text={item.polarity} />,
+          date: <StandardText text={dateTime.toISOString()} />,
+          subjectivity: <StandardText text={item.subjectivity} />
+        }}
+      )
+
+      // set state with the result
+      setList(result);
+    }
+
+    // call the function
+    fetchData()
+      // make sure to catch any error
+      .catch(console.error);
+  }, [])
+  //const { columns, rows } = authorsTableData;
+  //const { columns: prCols, rows: prRows } = projectsTableData;
+
+  const [menu, setMenu] = useState(null);
+
+  const openMenu = ({ currentTarget }) => setMenu(currentTarget);
+  const closeMenu = () => setMenu(null);
+
+  const renderMenu = (
+    <Menu
+      id="simple-menu"
+      anchorEl={menu}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "left",
+      }}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={Boolean(menu)}
+      onClose={closeMenu}
+    >
+      <MenuItem onClick={closeMenu}>Download as CSV</MenuItem>
+      <MenuItem onClick={closeMenu}>Download as JSON</MenuItem>
+    </Menu>
+  );
 
   return (
     <DashboardLayout>
@@ -43,12 +112,23 @@ function Tables() {
       <VuiBox py={3}>
         <VuiBox mb={3}>
           <Card>
-            <VuiBox display="flex" justifyContent="space-between" alignItems="center" mb="22px">
-              <VuiTypography variant="lg" color="white">
-                Authors table
-              </VuiTypography>
+
+            <VuiBox display="flex" justifyContent="space-between" alignItems="stretch" mb="22px">
+              <VuiBox mb="auto">
+                <VuiTypography variant="lg" color="white">
+                  Raw Data Table {renderMenu}
+                </VuiTypography>
+              </VuiBox>
+
+              <VuiBox display="flex" color="text" px={2}>
+                <Icon sx={{ cursor: "pointer", fontWeight: "bold" }} fontSize="small" onClick={openMenu}>
+                  more_vert
+                </Icon>
+              </VuiBox>
+
             </VuiBox>
             <VuiBox
+              alignItems="stretch"
               sx={{
                 "& th": {
                   borderBottom: ({ borders: { borderWidth }, palette: { grey } }) =>
@@ -62,33 +142,10 @@ function Tables() {
                 },
               }}
             >
-              <Table columns={columns} rows={rows} />
+              {list.length > 0 ? (<Table columns={columns} rows={list} /> ) : (<p>Loading...</p>) }
             </VuiBox>
           </Card>
         </VuiBox>
-        <Card>
-          <VuiBox display="flex" justifyContent="space-between" alignItems="center">
-            <VuiTypography variant="lg" color="white">
-              Projects table
-            </VuiTypography>
-          </VuiBox>
-          <VuiBox
-            sx={{
-              "& th": {
-                borderBottom: ({ borders: { borderWidth }, palette: { grey } }) =>
-                  `${borderWidth[1]} solid ${grey[700]}`,
-              },
-              "& .MuiTableRow-root:not(:last-child)": {
-                "& td": {
-                  borderBottom: ({ borders: { borderWidth }, palette: { grey } }) =>
-                    `${borderWidth[1]} solid ${grey[700]}`,
-                },
-              },
-            }}
-          >
-            <Table columns={prCols} rows={prRows} />
-          </VuiBox>
-        </Card>
       </VuiBox>
       <Footer />
     </DashboardLayout>

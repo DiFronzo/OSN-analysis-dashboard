@@ -5,12 +5,14 @@ from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
 from flask import Flask, jsonify, render_template, send_from_directory, request
 from marshmallow import Schema, fields
+from flask_cors import CORS
 
 from preprocessing import Preprocessing
 from processing import utils
 
 # https://github.com/marshmallow-code/apispec
 app = Flask(__name__, template_folder='swagger/templates')
+CORS(app)
 
 
 class RawDataParameter(Schema):
@@ -30,14 +32,20 @@ def polarity(word_query):
         parameters:
         - in: path
           schema: RawDataParameter
+        - in: query
+          name: number_of_tweets
+          schema: RawDataQueryNumOfTweets
         responses:
             200:
               content:
                 application/json:
                   schema: PolarityListResponseSchema
     """
+    args = request.args
+    number_of_tweets = args.get('number_of_tweets')
+
     r = Preprocessing()
-    data = r.preprocessing_data(word_query, 10, "", "en")
+    data = r.preprocessing_data(word_query, int(number_of_tweets) if not (number_of_tweets is None) else 100, "", "en")
     get_graph_sentiment = utils.graph_sentiment(data)
     rows = json.loads(get_graph_sentiment.to_json(orient="records"))
     return PolarityListResponseSchema().dump({"polarity": rows})
@@ -45,7 +53,7 @@ def polarity(word_query):
 
 class PolaritySchema(Schema):
     index = fields.Str()
-    Analysis = fields.Int()
+    analysis = fields.Int()
 
 
 class PolarityListResponseSchema(Schema):
@@ -119,15 +127,17 @@ def create_swagger_spec():
 
 
 class RawDataResponseSchema(Schema):
-    Tweets = fields.Str()
-    Date = fields.Float()
-    Location = fields.Str()
+    tweets = fields.Str()
+    date = fields.Float()
+    location = fields.Str()
     mentions = fields.List(fields.Str())
     hastags = fields.List(fields.Str())
     # retweets = fields.List(fields.Str())
-    Subjectivity = fields.Float()
-    Polarity = fields.Float()
-    Analysis = fields.Str()
+    subjectivity = fields.Float()
+    polarity = fields.Float()
+    analysis = fields.Str()
+    profile_img = fields.Str()
+    screen_name = fields.Str()
 
 
 class RawDataListResponseSchema(Schema):
