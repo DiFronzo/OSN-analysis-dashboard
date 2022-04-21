@@ -30,45 +30,42 @@ import Footer from "examples/Footer";
 import Table from "examples/Tables/Table";
 
 // Data
-import authorsTableData from "layouts/tables/data/authorsTableData";
-import Author from "layouts/tables/data/authorsTableData";
-import Polarity from "layouts/tables/data/authorsTableData";
-import StandardText from "layouts/tables/data/authorsTableData";
+import { Author, Polarity, StandardText, GetAnalysis } from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
-import data from "../dashboard/components/Projects/data";
 import { useEffect, useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Icon from "@mui/material/Icon";
 
-
-export function getTweet() {
-  return fetch('http://127.0.0.1:5000/raw_data/Trump?number_of_tweets=10&function_option=&lang_opt=en')
-    .then(data => data.json())
-}
-
-
 function Tables() {
   const [list, setList] = useState([]);
+  const columns = [
+    { name: "tweet", align: "left" },
+    { name: "polarity", align: "left" },
+    { name: "location", align: "left" },
+    { name: "polarity_val", align: "center" },
+    { name: "date", align: "center" },
+    { name: "subjectivity", align: "center" },
+  ]
 
   useEffect(() => {
     // declare the async data fetching function
     const fetchData = async () => {
       // get the data from the api
-      const data = await fetch('http://127.0.0.1:5000/raw_data/Trump?number_of_tweets=10&function_option=&lang_opt=en');
+      const data = await fetch('http://127.0.0.1:5000/raw_data/Trump?number_of_tweets=20&function_option=&lang_opt=en');
       // convert the data to json
       const json = await data.json();
-      let percentage22 = {text: "-0.8", color: "error"}
-      let result = await json.raw_data.map((item) => {
+      let result = await json.raw_data?.map((item) => {
+        let dateTime = new Date(item.date);
         return {
-          author: <Author image="https://pbs.twimg.com/profile_images/1503591435324563456/foUrqiEw_400x400.jpg"
-                          tweet="Elon Musk robbing people blind and laughing all the way to the bank laughing"
-                          name="elonmusk" />,
-          polarity: <Polarity status="Negative" percentage={percentage22} />,
-          location: <StandardText text="California, US" />,
-          polarity_val: <StandardText text="1" />,
-          date: <StandardText text="23/04/18" />,
-          subjectivity: <StandardText text="0.9" />
+          tweet: <Author image={item.profile_img}
+                          tweet={item.tweets}
+                          name={item.screen_name} />,
+          polarity: <Polarity status={GetAnalysis(parseFloat(item.polarity))} />,
+          location: <StandardText text={item.location} />,
+          polarity_val: <StandardText text={item.polarity} />,
+          date: <StandardText text={dateTime.toISOString()} />,
+          subjectivity: <StandardText text={item.subjectivity} />
         }}
       )
 
@@ -81,8 +78,8 @@ function Tables() {
       // make sure to catch any error
       .catch(console.error);
   }, [])
-  const { columns, rows } = authorsTableData;
-  const { columns: prCols, rows: prRows } = projectsTableData;
+  //const { columns, rows } = authorsTableData;
+  //const { columns: prCols, rows: prRows } = projectsTableData;
 
   const [menu, setMenu] = useState(null);
 
@@ -115,20 +112,23 @@ function Tables() {
       <VuiBox py={3}>
         <VuiBox mb={3}>
           <Card>
-            <VuiBox display="flex" justifyContent="space-between" alignItems="center" mb="22px">
+
+            <VuiBox display="flex" justifyContent="space-between" alignItems="stretch" mb="22px">
               <VuiBox mb="auto">
                 <VuiTypography variant="lg" color="white">
-                  Raw data table
+                  Raw Data Table {renderMenu}
                 </VuiTypography>
               </VuiBox>
-              <VuiBox color="text" px={2}>
+
+              <VuiBox display="flex" color="text" px={2}>
                 <Icon sx={{ cursor: "pointer", fontWeight: "bold" }} fontSize="small" onClick={openMenu}>
                   more_vert
                 </Icon>
               </VuiBox>
-              {renderMenu}
+
             </VuiBox>
             <VuiBox
+              alignItems="stretch"
               sx={{
                 "& th": {
                   borderBottom: ({ borders: { borderWidth }, palette: { grey } }) =>
@@ -142,7 +142,7 @@ function Tables() {
                 },
               }}
             >
-              {list.length > 0 ? (<Table columns={columns} rows={rows} /> ) : (<p>shit</p>) }
+              {list.length > 0 ? (<Table columns={columns} rows={list} /> ) : (<p>Loading...</p>) }
             </VuiBox>
           </Card>
         </VuiBox>

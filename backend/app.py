@@ -48,7 +48,6 @@ def polarity(word_query):
     data = r.preprocessing_data(word_query, int(number_of_tweets) if not (number_of_tweets is None) else 100, "", "en")
     get_graph_sentiment = utils.graph_sentiment(data)
     rows = json.loads(get_graph_sentiment.to_json(orient="records"))
-    print(rows)
     return PolarityListResponseSchema().dump({"polarity": rows})
 
 
