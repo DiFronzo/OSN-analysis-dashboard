@@ -1,0 +1,12 @@
+.header {
+    display: flex;
+    width: 100%;
+    background-color: #ffffff;
+    box-shadow: 0 0.1em 0.3em #969696;
+}
+
+.title {
+    font-size: 1.5rem;
+    color: #000000;
+    margin: 0.5em;
+}

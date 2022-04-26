@@ -39,7 +39,7 @@ def polarity(word_query):
                   schema: PolarityListResponseSchema
     """
     r = Preprocessing()
-    data = r.preprocessing_data(word_query, 10, "", "en")
+    data = r.preprocessing_data(word_query, 1000, "", "en")
     get_graph_sentiment = utils.graph_sentiment(data)
     rows = json.loads(get_graph_sentiment.to_json(orient="records"))
     return PolarityListResponseSchema().dump({"polarity": rows})

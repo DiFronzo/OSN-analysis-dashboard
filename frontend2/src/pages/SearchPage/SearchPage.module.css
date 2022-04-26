@@ -1,0 +1,23 @@
+.wrapper {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: 12rem 1fr;
+}
+
+.wrapper > form {
+    grid-column: 4 / span 6;
+    grid-row: 2;
+    display: flex;
+    flex-flow: wrap;
+    justify-content: center;
+}
+
+.wrapper > form > input {
+    width: 100%;
+}
+
+.wrapper > form button {
+    min-width: 8rem;
+    margin: 0.5rem;
+}

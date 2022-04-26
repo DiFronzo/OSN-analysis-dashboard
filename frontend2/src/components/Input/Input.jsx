@@ -1,25 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styles from './Input.module.css';
 
-const Input = ({ id, label, textBefore, textAfter, ...data }) => (
-  <label htmlFor={id}>
-    <p>{label}</p>
-    {textBefore}
-    <input id={id} {...data} />
-    {textAfter}
-  </label>
+const Input = ({ id, type, ...data }) => (
+  <input id={id} type={type} className={styles.input} {...data} />
 );
 
 Input.defaultProps = {
-  textBefore: '',
-  textAfter: '',
+  type: 'text',
 };
 
 Input.propTypes = {
   id: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  textBefore: PropTypes.string,
-  textAfter: PropTypes.string,
+  type: PropTypes.string,
 };
 
 export default Input;

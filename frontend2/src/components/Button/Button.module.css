@@ -1,0 +1,22 @@
+.btn {
+    color: #000000;
+    background-color: #ffffff;
+    border-radius: 0.5em;
+    border: none;
+    padding: 0.5em;
+    box-shadow: 0 0.1em 0.3em #969696;
+}
+
+.btn:hover {
+    cursor: pointer;
+    background-color: #ebebeb;
+}
+
+.submit {
+    color: #ffffff;
+    background-color: #060d9e;
+}
+
+.submit:hover {
+    background-color: #04096d;
+}

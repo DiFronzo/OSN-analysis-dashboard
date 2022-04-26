@@ -1,0 +1,21 @@
+.input[type=text],
+.input[type="number"],
+.input[type=search], 
+.input[type=date] {
+    height: 2rem;
+    padding: 0 1rem;
+    border-radius: 2rem;
+    border: none;
+    box-shadow: 0.1em 0.1em 0.3em #969696;
+}
+
+.input[type=text]:hover, 
+.input[type="number"]:hover,
+.input[type=search]:hover, 
+.input[type=date]:hover,
+.input[type=text]:focus, 
+.input[type="number"]:focus,
+.input[type=search]:focus, 
+.input[type=date]:focus {
+    outline: 0.1rem solid #000000;
+}

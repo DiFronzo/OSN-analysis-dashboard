@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styles from './MainLayout.module.css';
 import Header from '../../components/Header';
 
 const MainLayout = ({ children }) => (
   <>
     <Header />
-    <main>{children}</main>
+    <main className={styles.main}>{children}</main>
   </>
 );
 

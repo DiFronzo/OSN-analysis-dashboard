@@ -1,18 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styles from './Select.module.css';
 
-const Select = ({ id, label, ...data }) => (
-  <label htmlFor={id}>
-    <p>{label}</p>
-    <select id={id} {...data}>
-      <option>Worldwide</option>
-    </select>
-  </label>
+const Select = ({ id, ...data }) => (
+  <select id={id} className={styles.select} {...data}>
+    <option>Worldwide</option>
+  </select>
 );
 
 Select.propTypes = {
   id: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
 };
 
 export default Select;
