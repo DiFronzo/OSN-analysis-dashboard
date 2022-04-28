@@ -60,6 +60,7 @@ import {
 // Images
 import team2 from "assets/images/team-2.jpg";
 import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
+import useQuery from "context/query";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const [navbarType, setNavbarType] = useState();
@@ -67,6 +68,9 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
+
+  // Get query from context.
+  const { query, setQuery } = useQuery();
 
   useEffect(() => {
     // Setting the navbar type
@@ -98,6 +102,8 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
   const handleCloseMenu = () => setOpenMenu(false);
+  // Sets value of search field.
+  const handleChange = (event) => setQuery(event.target.value);
 
   // Render the notifications menu
   const renderMenu = () => (
@@ -153,6 +159,8 @@ function DashboardNavbar({ absolute, light, isMini }) {
             <VuiBox pr={1}>
               <VuiInput
                 placeholder="Type here..."
+                value={query}
+                onChange={handleChange}
                 icon={{ component: "search", direction: "left" }}
                 sx={({ breakpoints }) => ({
                   [breakpoints.down("sm")]: {
