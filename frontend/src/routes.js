@@ -55,8 +55,13 @@ import { IoBuild } from "react-icons/io5";
 import { BsCreditCardFill } from "react-icons/bs";
 import { IoStatsChart } from "react-icons/io5";
 import { IoHome } from "react-icons/io5";
+import Search from "layouts/Search";
 
 const routes = [
+  {
+    route: "/",
+    component: Search,
+  },
   {
     type: "collapse",
     name: "Dashboard",
