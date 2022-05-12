@@ -17,20 +17,17 @@ const WelcomeMark = () => {
     })}>
       <VuiBox height="100%" display="flex" flexDirection="column" justifyContent="space-between">
         <VuiBox>
-          <VuiTypography color="text" variant="button" fontWeight="regular" mb="12px">
-            Welcome back,
-          </VuiTypography>
           <VuiTypography color="white" variant="h3" fontWeight="bold" mb="18px">
-            Mark Johnson
+            Welcome
           </VuiTypography>
           <VuiTypography color="text" variant="h6" fontWeight="regular" mb="auto">
             Glad to see you again!
-            <br /> Ask me anything.
+            <br /> Run a new search?
           </VuiTypography>
         </VuiBox>
         <VuiTypography
           component="a"
-          href="#"
+          href="/search"
           variant="button"
           color="white"
           fontWeight="regular"
@@ -51,7 +48,7 @@ const WelcomeMark = () => {
             },
           }}
         >
-          Tap to record
+          Tap for a new search
           <Icon sx={{ fontWeight: "bold", ml: "5px" }}>arrow_forward</Icon>
         </VuiTypography>
       </VuiBox>
