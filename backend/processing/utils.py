@@ -2,6 +2,7 @@ import re
 
 import pandas as pd
 from textblob import TextBlob
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 
 def extract_mentions(text: str) -> list:
@@ -14,6 +15,22 @@ def extract_hastag(text: str) -> list:
 
 def get_subjectivity(text: str) -> tuple:
     return TextBlob(text).sentiment.subjectivity
+
+
+# Retrieve polarity using vader
+def get_polarity_vader(text: str) -> tuple:
+    sid_obj = SentimentIntensityAnalyzer()
+    sentiment_dict = sid_obj.polarity_scores(text)
+    return sentiment_dict['compound']
+
+
+def get_analysis_vader(score: float) -> str:
+    if score >= 0.05:
+        return 'Positive'
+    elif score <= -0.05:
+        return 'Negative'
+    else:
+        return 'Neutral'
 
 
 # Create a function to get the polarity
