@@ -117,8 +117,10 @@ class Preprocessing:
                                   tweet_mode="extended").items(
                 number_of_tweets)
 
-        data = pd.DataFrame([[tweet.full_text, tweet.created_at, tweet.user.location, tweet.user.profile_image_url_https, tweet.user.screen_name] for tweet in posts],
-                            columns=['tweets', 'date', "location", "profile_img", "screen_name"])  # tweet.user.location
+        data = pd.DataFrame([[tweet.full_text, tweet.created_at, tweet.user.location, tweet.place, tweet.coordinates,
+                              tweet.user.profile_image_url_https, tweet.user.screen_name] for tweet in posts],
+                            columns=['tweets', 'date', "location", "place", "coordinates", "profile_img",
+                                     "screen_name"])
 
         if data.empty:
             return data
@@ -127,6 +129,7 @@ class Preprocessing:
         data["hastags"] = data["tweets"].apply(extract_hastag)
         # data['links'] = data['tweets'].str.extract('(https?:\/\/\S+)', expand=False).str.strip()
         data['retweets'] = data['tweets'].str.extract('(RT[\s@[A-Za-z0–9\d\w]+)', expand=False).str.strip()
+        data['profile_img'] = "http://127.0.0.1:5000" + data['profile_img'].str[21:]
 
         data['tweets'] = data['tweets'].apply(self.clean_txt)
         discard = ["CNFTGiveaway", "GIVEAWAYPrizes", "Giveaway", "Airdrop", "GIVEAWAY", "makemoneyonline",
