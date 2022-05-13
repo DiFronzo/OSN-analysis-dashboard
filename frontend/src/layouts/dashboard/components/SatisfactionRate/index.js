@@ -10,8 +10,8 @@ import { Author, GetAnalysis, Polarity, StandardText } from "../../../tables/dat
 export const pieChartDataCharts1 = [70, 10, 20];
 
 export const pieChartOptionsCharts1 = {
-  labels: ["Negative", "Neutral", "Positive"],
-  colors: ["#1f77b4", "#ff7f0e", "#2ca02c"],
+  labels: ["Positive", "Neutral", "Negative"],
+  colors: ["#2ca02c", "#ff7f0e", "#1f77b4"],
   chart: {
     width: "100%",
     stroke: {
@@ -46,7 +46,7 @@ export const pieChartOptionsCharts1 = {
     }
   },
   fill: {
-    colors: ["#1f77b4", "#ff7f0e", "#2ca02c"],
+    colors: ["#2ca02c", "#ff7f0e", "#1f77b4"],
   },
   tooltip: {
     enabled: true,
@@ -55,16 +55,19 @@ export const pieChartOptionsCharts1 = {
 };
 
 const SatisfactionRate = () => {
-  const [polarity, setPolarity] = useState([26, 44, 30]);
+  const [polarity, setPolarity] = useState([]);
 
+  // TODO! what if there are only 3 val? should be fixed in python api.
   useEffect(() => {
     // declare the async data fetching function
     const fetchData = async () => {
       // get the data from the api
-      const data = await fetch('http://127.0.0.1:5000/pie/trump?number_of_tweets=100');
+      const data = await fetch('http://127.0.0.1:5000/pie/ok?number_of_tweets=100');
       // convert the data to json
       const json = await data.json();
-      let result = [26, 44, 30]
+      let result = await json.polarity?.map((item) => {
+        return item.analysis;
+      });
 
       // set state with the result
       setPolarity(result);
@@ -82,24 +85,6 @@ const SatisfactionRate = () => {
         <VuiTypography variant="lg" color="white" fontWeight="bold" mb="4px">
           Pie Chart showing Polarity <br/>
         </VuiTypography>
-
-        <VuiBox sx={{ width: "100%" }}>
-          <VuiBox
-            flexDirection="column"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            sx={{ width: "250px", height: "250px" }}
-          >
-            {polarity ? (
-            <PieChart
-              chartData={polarity}
-              chartOptions={pieChartOptionsCharts1}
-
-            />
-            ) : (<p>Loading..</p>)}
-          </VuiBox>
-        </VuiBox>
         <VuiBox
           flexDirection="column"
           display="flex"
@@ -113,9 +98,25 @@ const SatisfactionRate = () => {
             display="flex"
             justifyContent="center"
             alignItems="center"
+            sx={{ width: "250px", height: "250px" }}
+          >
+            {polarity.length > 0 ? (
+            <PieChart
+              chartData={polarity}
+              chartOptions={pieChartOptionsCharts1}
+
+            />
+            ) : (<p>Loading..</p>)}
+          </VuiBox>
+
+          <VuiBox
+            flexDirection="column"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
             sx={{ minWidth: "80px" }}
           >
-            <VuiTypography color="white" variant="h5">
+            <VuiTypography color="white" variant="h6">
               Based on TextBlob
             </VuiTypography>
 
