@@ -5,6 +5,7 @@ import VuiButton from "components/VuiButton";
 import VuiInput from "components/VuiInput";
 import PageLayout from "examples/LayoutContainers/PageLayout";
 import { useState } from "react";
+import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 
 function Search() {
 	const [query, setQuery] = useState('');
@@ -20,6 +21,7 @@ function Search() {
 
 	return (
 		<PageLayout>
+			<DefaultNavbar />
 			<Grid 
 				container
 				spacing={0}
