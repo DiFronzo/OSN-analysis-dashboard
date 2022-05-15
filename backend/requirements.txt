@@ -11,3 +11,4 @@ apispec~=5.1.1
 marshmallow~=3.15.0
 apispec-webframeworks~=0.5.2
 Flask-Cors~=1.10.3
+requests~=2.27.1
