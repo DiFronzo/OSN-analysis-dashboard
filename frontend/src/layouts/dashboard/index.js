@@ -60,9 +60,13 @@ import { lineChartOptionsDashboard } from "layouts/dashboard/data/lineChartOptio
 import { barChartDataDashboard } from "layouts/dashboard/data/barChartData";
 import { barChartOptionsDashboard } from "layouts/dashboard/data/barChartOptions";
 
+// Hooks
+import useSearch from "hooks/useSearch";
+
 function Dashboard() {
   const { gradients } = colors;
   const { cardContent } = gradients;
+  const { results } = useSearch();
 
   return (
     <DashboardLayout>
