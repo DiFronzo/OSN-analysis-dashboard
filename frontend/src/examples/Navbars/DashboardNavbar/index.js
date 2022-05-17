@@ -68,6 +68,13 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
 
+  const { search } = useLocation();
+  const queryParams = new URLSearchParams(search);
+
+  const [query, setQuery] = useState(queryParams.get('query') || '');
+
+  const handleQueryChange = (e) => setQuery(e.target.value);
+
   useEffect(() => {
     // Setting the navbar type
     if (fixedNavbar) {
@@ -153,6 +160,8 @@ function DashboardNavbar({ absolute, light, isMini }) {
             <VuiBox pr={1}>
               <VuiInput
                 placeholder="Type here..."
+                value={query}
+                onChange={handleQueryChange}
                 icon={{ component: "search", direction: "left" }}
                 sx={({ breakpoints }) => ({
                   [breakpoints.down("sm")]: {
