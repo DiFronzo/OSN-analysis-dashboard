@@ -66,11 +66,11 @@ import useSearch from "hooks/useSearch";
 function Dashboard() {
   const { gradients } = colors;
   const { cardContent } = gradients;
-  const { results } = useSearch();
+  const { results, fetchSearch } = useSearch();
 
   return (
     <DashboardLayout>
-      <DashboardNavbar />
+      <DashboardNavbar fetchSearch={fetchSearch} />
       <VuiBox py={3}>
         <VuiBox mb={3}>
           <Grid container spacing={3}>

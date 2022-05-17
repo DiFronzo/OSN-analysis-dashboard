@@ -19,7 +19,7 @@
 import { useState, useEffect } from "react";
 
 // react-router components
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useHistory } from "react-router-dom";
 
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
@@ -35,6 +35,7 @@ import Icon from "@mui/material/Icon";
 import VuiBox from "components/VuiBox";
 import VuiTypography from "components/VuiTypography";
 import VuiInput from "components/VuiInput";
+import VuiButton from "components/VuiButton";
 
 // Vision UI Dashboard React example components
 import Breadcrumbs from "examples/Breadcrumbs";
@@ -60,8 +61,9 @@ import {
 // Images
 import team2 from "assets/images/team-2.jpg";
 import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
+import useSearch from "hooks/useSearch";
 
-function DashboardNavbar({ absolute, light, isMini }) {
+function DashboardNavbar({ absolute, light, isMini, fetchSearch }) {
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useVisionUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator } = controller;
@@ -73,7 +75,14 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
   const [query, setQuery] = useState(queryParams.get('query') || '');
 
+  const history = useHistory();
+
   const handleQueryChange = (e) => setQuery(e.target.value);
+
+  const handleSearch = () => {
+    history.push(`/dashboard?query=${query}`);
+    fetchSearch(query);
+  }
 
   useEffect(() => {
     // Setting the navbar type
@@ -157,7 +166,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
         </VuiBox>
         {isMini ? null : (
           <VuiBox sx={(theme) => navbarRow(theme, { isMini })}>
-            <VuiBox pr={1}>
+            <VuiBox pr={1} display="flex">
               <VuiInput
                 placeholder="Type here..."
                 value={query}
@@ -173,6 +182,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                   backgroundColor: "info.main !important",
                 })}
               />
+              <VuiButton onClick={handleSearch} color="primary">Search</VuiButton>
             </VuiBox>
             <VuiBox color={light ? "white" : "inherit"}>
               <Link to="/authentication/sign-in">
