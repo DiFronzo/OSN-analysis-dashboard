@@ -30,7 +30,7 @@ import VuiProgress from "components/VuiProgress";
 import VuiTypography from "components/VuiTypography";
 
 // Vision UI Dashboard React contexts
-import { setDirection, useVisionUIController } from "context";
+import { setDirection, useVisionUIController } from "contexts/VisionUI";
 import MiniStatisticsCard from "examples/Cards/StatisticsCards/MiniStatisticsCard";
 import BarChart from "examples/Charts/BarCharts/BarChart";
 

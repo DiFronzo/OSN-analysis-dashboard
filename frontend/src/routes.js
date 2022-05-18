@@ -49,11 +49,6 @@ import SignUp from "layouts/authentication/sign-up";
 import Search from "layouts/search";
 
 // Vision UI Dashboard React icons
-import { IoRocketSharp } from "react-icons/io5";
-import { IoIosDocument } from "react-icons/io";
-import { BsFillPersonFill } from "react-icons/bs";
-import { IoBuild } from "react-icons/io5";
-import { BsCreditCardFill } from "react-icons/bs";
 import { IoStatsChart } from "react-icons/io5";
 import { IoHome } from "react-icons/io5";
 

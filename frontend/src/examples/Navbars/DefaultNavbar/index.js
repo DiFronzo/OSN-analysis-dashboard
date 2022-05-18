@@ -119,9 +119,6 @@ function DefaultNavbar({ transparent, light, action }) {
             OSN Dashboard
           </VuiTypography>
         </VuiBox>
-        <VuiBox color="inherit" display={{ xs: "none", lg: "flex" }} m={0} p={0}>
-          <DefaultNavbarLink icon="donut_large" name="dashboard" route="/dashboard" />
-        </VuiBox>
         {action &&
           (action.type === "internal" ? (
             <VuiBox display={{ xs: "none", lg: "inline-block" }}>

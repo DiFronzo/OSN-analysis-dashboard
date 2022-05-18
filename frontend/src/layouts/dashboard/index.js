@@ -16,6 +16,8 @@
 
 */
 
+import { useEffect, useState } from "react";
+
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Icon from "@mui/material/Icon";
@@ -61,16 +63,41 @@ import { barChartDataDashboard } from "layouts/dashboard/data/barChartData";
 import { barChartOptionsDashboard } from "layouts/dashboard/data/barChartOptions";
 
 // Hooks
-import useSearch from "hooks/useSearch";
+import { useSearchContext } from "contexts/Search";
 
 function Dashboard() {
   const { gradients } = colors;
   const { cardContent } = gradients;
-  const { results, fetchSearch } = useSearch();
+  const { searchQuery } = useSearchContext();
+
+  const [searchResults, setSearchResults] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  const handleSearch = async () => {
+    setIsLoading(true);
+    if (!searchQuery) {
+      setSearchResults(null);
+      setError(false);
+      setIsLoading(false);
+    }
+    try {
+			const data = await fetch(`http://127.0.0.1:5000/raw_data/${searchQuery}`);
+			const json = await data.json();
+			setSearchResults(json);
+			setError(null);
+		} catch (err) {
+			setSearchResults(null);
+			setError(err);
+		}
+		setIsLoading(false);
+  }
+
+  useEffect(handleSearch, []);
 
   return (
     <DashboardLayout>
-      <DashboardNavbar fetchSearch={fetchSearch} />
+      <DashboardNavbar handleSearch={handleSearch} />
       <VuiBox py={3}>
         <VuiBox mb={3}>
           <Grid container spacing={3}>

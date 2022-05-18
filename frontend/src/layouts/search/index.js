@@ -1,4 +1,4 @@
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { Grid } from "@mui/material";
 import VuiBox from "components/VuiBox";
 import VuiButton from "components/VuiButton";
@@ -6,18 +6,23 @@ import VuiInput from "components/VuiInput";
 import PageLayout from "examples/LayoutContainers/PageLayout";
 import { useState } from "react";
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
+import { useSearchContext } from "contexts/Search";
 
 function Search() {
-	const [query, setQuery] = useState('');
+	// const [query, setQuery] = useState('');
+	const { searchQuery, setSearchQuery } = useSearchContext();
 	// const { search } = useLocation();
 	// const query = new URLSearchParams(search);
 	const history = useHistory();
 
 	const handleSearch = async () => {
-			history.push(`/dashboard?query=${query}`);
+		if (!searchQuery) {
+			return;
+		}
+		history.push(`/dashboard`);
 	}
 
-	const handleChange = (e) => setQuery(e.target.value);
+	const handleQueryChange = (e) => setSearchQuery(e.target.value);
 
 	return (
 		<PageLayout>
@@ -42,8 +47,8 @@ function Search() {
 					<VuiInput 
 						type="search" 
 						placeholder="Search..." 
-						value={query}
-						onChange={handleChange} 
+						value={searchQuery}
+						onChange={handleQueryChange} 
 						width="100%" 
 						sx={{ m: '0.5em' }} 
 					/>

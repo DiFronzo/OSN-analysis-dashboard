@@ -56,33 +56,25 @@ import {
   setTransparentNavbar,
   setMiniSidenav,
   setOpenConfigurator,
-} from "context";
+} from "contexts/VisionUI";
 
 // Images
 import team2 from "assets/images/team-2.jpg";
 import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
-import useSearch from "hooks/useSearch";
 
-function DashboardNavbar({ absolute, light, isMini, fetchSearch }) {
+// Search context
+import { useSearchContext } from "contexts/Search";
+
+function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useVisionUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
 
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
+  const { searchQuery, setSearchQuery } = useSearchContext();
 
-  const [query, setQuery] = useState(queryParams.get('query') || '');
-
-  const history = useHistory();
-
-  const handleQueryChange = (e) => setQuery(e.target.value);
-
-  const handleSearch = () => {
-    history.push(`/dashboard?query=${query}`);
-    fetchSearch(query);
-  }
+  const handleQueryChange = (e) => setSearchQuery(e.target.value);
 
   useEffect(() => {
     // Setting the navbar type
@@ -169,7 +161,7 @@ function DashboardNavbar({ absolute, light, isMini, fetchSearch }) {
             <VuiBox pr={1} display="flex">
               <VuiInput
                 placeholder="Type here..."
-                value={query}
+                value={searchQuery}
                 onChange={handleQueryChange}
                 icon={{ component: "search", direction: "left" }}
                 sx={({ breakpoints }) => ({

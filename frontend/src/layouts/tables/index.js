@@ -37,6 +37,9 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Icon from "@mui/material/Icon";
 
+// Search context
+import { useSearchContext } from "contexts/Search";
+
 function Tables() {
   const [list, setList] = useState([]);
   const columns = [
@@ -48,36 +51,33 @@ function Tables() {
     { name: "subjectivity", align: "center" },
   ]
 
-  useEffect(() => {
-    // declare the async data fetching function
-    const fetchData = async () => {
-      // get the data from the api
-      const data = await fetch('http://127.0.0.1:5000/raw_data/Trump?number_of_tweets=20&function_option=&lang_opt=en');
-      // convert the data to json
-      const json = await data.json();
-      let result = await json.raw_data?.map((item) => {
-        let dateTime = new Date(item.date);
-        return {
-          tweet: <Author image={item.profile_img}
-                          tweet={item.tweets}
-                          name={item.screen_name} />,
-          polarity: <Polarity status={GetAnalysis(parseFloat(item.polarity))} />,
-          location: <StandardText text={item.location} />,
-          polarity_val: <StandardText text={item.polarity} />,
-          date: <StandardText text={dateTime.toISOString()} />,
-          subjectivity: <StandardText text={item.subjectivity} />
-        }}
-      )
+  const { searchQuery } = useSearchContext();
 
-      // set state with the result
-      setList(result);
+  const [searchResults, setSearchResults] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  const handleSearch = async () => {
+    setIsLoading(true);
+    if (!searchQuery) {
+      setSearchResults(null);
+      setError(false);
+      setIsLoading(false);
     }
+    try {
+			const data = await fetch(`http://127.0.0.1:5000/raw_data/${searchQuery}`);
+			const json = await data.json();
+			setSearchResults(json);
+			setError(null);
+		} catch (err) {
+			setSearchResults(null);
+			setError(err);
+		}
+		setIsLoading(false);
+  }
 
-    // call the function
-    fetchData()
-      // make sure to catch any error
-      .catch(console.error);
-  }, [])
+  useEffect(handleSearch, []);
+
   //const { columns, rows } = authorsTableData;
   //const { columns: prCols, rows: prRows } = projectsTableData;
 
@@ -108,7 +108,7 @@ function Tables() {
 
   return (
     <DashboardLayout>
-      <DashboardNavbar />
+      <DashboardNavbar handleSearch={handleSearch} />
       <VuiBox py={3}>
         <VuiBox mb={3}>
           <Card>

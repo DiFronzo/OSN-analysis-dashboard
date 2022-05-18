@@ -47,7 +47,7 @@ import {
   setTransparentSidenav,
   setFixedNavbar,
   setSidenavColor,
-} from "context";
+} from "contexts/VisionUI";
 
 function Configurator() {
   const [controller, dispatch] = useVisionUIController();
