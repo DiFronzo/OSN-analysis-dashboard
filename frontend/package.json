@@ -29,6 +29,8 @@
     "react-icons": "^4.3.1",
     "react-router-dom": "5.2.0",
     "react-scripts": "^5.0.0",
+    "react-simple-maps": "^2.3.0",
+    "react-tooltip": "^4.2.21",
     "stylis": "4.0.10",
     "stylis-plugin-rtl": "2.1.0",
     "uuid": "8.3.2",
