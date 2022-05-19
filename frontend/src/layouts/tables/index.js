@@ -76,7 +76,7 @@ function Tables() {
     // call the function
     fetchData()
       // make sure to catch any error
-      .catch(console.error);
+      //.catch(console.error);
   }, [])
   //const { columns, rows } = authorsTableData;
   //const { columns: prCols, rows: prRows } = projectsTableData;
