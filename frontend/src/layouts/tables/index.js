@@ -77,7 +77,7 @@ function Tables() {
   }
 
   useEffect(handleSearch, []);
-
+  
   //const { columns, rows } = authorsTableData;
   //const { columns: prCols, rows: prRows } = projectsTableData;
 
