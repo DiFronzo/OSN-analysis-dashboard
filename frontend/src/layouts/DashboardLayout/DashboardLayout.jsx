@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 function DashboardLayout({ children }) {
   return (
     <Box>
-      {/* Search box */}
       <Box>Search box</Box>
       <ButtonGroup>
         <Button LinkComponent={Link} to="/dashboard">
@@ -16,7 +15,6 @@ function DashboardLayout({ children }) {
           Table
         </Button>
       </ButtonGroup>
-      {/* Dashboard */}
       <Box container>{children}</Box>
     </Box>
   );

@@ -23,7 +23,7 @@ const StyledForm = styled.form(() => ({
   justifyContent: 'center',
 }));
 
-function Search() {
+function SearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [advancedData, setAdvancedData] = useState({
@@ -167,4 +167,4 @@ function Search() {
   );
 }
 
-export default Search;
+export default SearchPage;
