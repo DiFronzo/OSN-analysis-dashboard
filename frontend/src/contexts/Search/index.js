@@ -1,18 +1,32 @@
 import { useState, createContext, useContext } from "react";
 import PropTypes from 'prop-types';
 
+// Sentiment analysis libraries
+import { libraries } from "data/libraries";
+
 const SearchContext = createContext();
 
 const { Provider } = SearchContext;
 
 function SearchProvider({ children }) {
 	const [searchQuery, setSearchQuery] = useState('');
+	const [sentimentAnalysisLibrary, setSentimentAnalysisLibrary] = useState(libraries[0].toLowerCase());
+	const [advancedOptions, setAdvancedOptions] = useState({
+		amount: 100,
+		region: '',
+		from: '',
+		to: ''
+	});
 
 	return (
 		<Provider 
 			value={{ 
 				searchQuery, 
-				setSearchQuery 
+				setSearchQuery,
+				sentimentAnalysisLibrary,
+				setSentimentAnalysisLibrary,
+				advancedOptions,
+				setAdvancedOptions
 			}}
 		>
 			{children}

@@ -68,7 +68,7 @@ import { useSearchContext } from "contexts/Search";
 function Dashboard() {
   const { gradients } = colors;
   const { cardContent } = gradients;
-  const { searchQuery } = useSearchContext();
+  const { searchQuery, sentimentAnalysisLibrary } = useSearchContext();
 
   const [searchResults, setSearchResults] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -80,9 +80,10 @@ function Dashboard() {
       setSearchResults(null);
       setError(false);
       setIsLoading(false);
+      return;
     }
     try {
-			const data = await fetch(`http://127.0.0.1:5000/raw_data/${searchQuery}`);
+			const data = await fetch(`http://127.0.0.1:5000/raw_data/${searchQuery}?library=${sentimentAnalysisLibrary}`);
 			const json = await data.json();
 			setSearchResults(json);
 			setError(null);

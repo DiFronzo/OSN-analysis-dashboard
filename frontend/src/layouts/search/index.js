@@ -1,5 +1,4 @@
 import { useHistory } from "react-router-dom";
-import { Grid } from "@mui/material";
 import VuiBox from "components/VuiBox";
 import VuiButton from "components/VuiButton";
 import VuiInput from "components/VuiInput";
@@ -8,11 +7,20 @@ import { useState } from "react";
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import { useSearchContext } from "contexts/Search";
 
+// Sentiment analysis libraries
+import { libraries } from "data/libraries";
+import { FormLabel, Slider } from "@mui/material";
+
 function Search() {
-	// const [query, setQuery] = useState('');
-	const { searchQuery, setSearchQuery } = useSearchContext();
-	// const { search } = useLocation();
-	// const query = new URLSearchParams(search);
+	const { 
+		searchQuery, 
+		setSearchQuery,
+		sentimentAnalysisLibrary,
+		setSentimentAnalysisLibrary,
+		advancedOptions,
+		setAdvancedOptions
+	} = useSearchContext();
+	const [showAdvanced, setShowAdvanced] = useState(false);
 	const history = useHistory();
 
 	const handleSearch = async () => {
@@ -24,38 +32,86 @@ function Search() {
 
 	const handleQueryChange = (e) => setSearchQuery(e.target.value);
 
+	const handleSentimentAnalysisLibraryChange = (e) => setSentimentAnalysisLibrary(e.target.value);
+
+	const handleShowAdvancedOptions = () => setShowAdvanced(!showAdvanced);
+
+	const handleAdvancedOptionsChange = (e) => {
+		if (e.target.name == "amount") {
+			setAdvancedOptions({ ...advancedOptions, "amount": parseInt(e.target.value, 10) })
+			return;
+		}
+		setAdvancedOptions({ ...advancedOptions, [e.target.name]: e.target.value });
+	}
+
 	return (
 		<PageLayout>
 			<DefaultNavbar />
-			<Grid 
-				container
-				spacing={0}
-				direction="column"
-				alignItems="center"
-				justifyContent="center"
-				style={{ minHeight: '100vh' }}
-			>
+			<VuiBox width="100%" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 				<VuiBox 
-					item 
-					xs={6} 
 					width="40%" 
 					minWidth="16em" 
 					display="flex" 
 					justifyContent="center" 
-					sx={{ flexWrap: 'wrap' }}
+					sx={{ flexWrap: 'wrap', marginTop: '15em' }}
 				>
 					<VuiInput 
 						type="search" 
 						placeholder="Search..." 
 						value={searchQuery}
-						onChange={handleQueryChange} 
-						width="100%" 
+						onChange={handleQueryChange}
 						sx={{ m: '0.5em' }} 
 					/>
+					<select
+						value={sentimentAnalysisLibrary}
+						onChange={handleSentimentAnalysisLibraryChange}
+					>
+						{libraries.map((library) => <option key={library} value={library.toLowerCase()}>{library}</option>)}
+					</select>
 					<VuiButton onClick={handleSearch} color="primary" sx={{ m: '0.5em' }}>Search</VuiButton>
-					<VuiButton color="dark" sx={{ m: '0.5em' }}>Advanced</VuiButton>
+					<VuiButton onClick={handleShowAdvancedOptions} color="dark" sx={{ m: '0.5em' }}>Advanced</VuiButton>
+					{showAdvanced && (
+					<VuiBox display="flex" flexDirection="column" width="100%" sx={{ marginTop: "1em" }}>
+						<FormLabel>Amount of posts</FormLabel>
+						<Slider 
+							name="amount"
+							min={100}
+							max={1000}
+							value={advancedOptions.amount} 
+							onChange={handleAdvancedOptionsChange} 
+						/>
+						<VuiInput 
+							name="amount" 
+							type="number" 
+							value={advancedOptions.amount}
+							onChange={handleAdvancedOptionsChange}
+						/>
+						<FormLabel>Region</FormLabel>
+						<select
+							name="region" 
+							value={advancedOptions.region} 
+							onChange={handleAdvancedOptionsChange}
+						>
+							{/* Countires */}
+						</select>
+						<FormLabel>From</FormLabel>
+						<VuiInput
+							name="from"
+							type="date"
+							value={advancedOptions.from}
+							onChange={handleAdvancedOptionsChange}
+						/>
+						<FormLabel>To</FormLabel>
+						<VuiInput
+							name="to"
+							type="date"
+							value={advancedOptions.to}
+							onChange={handleAdvancedOptionsChange}
+						/>
+					</VuiBox>
+				)}
 				</VuiBox>
-			</Grid>
+			</VuiBox>
 		</PageLayout>
 	);
 }

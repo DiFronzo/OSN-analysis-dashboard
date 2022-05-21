@@ -65,6 +65,9 @@ import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
 // Search context
 import { useSearchContext } from "contexts/Search";
 
+// Sentiment analysis libraries
+import { libraries } from '../../../data/libraries';
+
 function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useVisionUIController();
@@ -72,9 +75,16 @@ function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
 
-  const { searchQuery, setSearchQuery } = useSearchContext();
+  const { 
+    searchQuery, 
+    setSearchQuery, 
+    sentimentAnalysisLibrary, 
+    setSentimentAnalysisLibrary 
+  } = useSearchContext();
 
   const handleQueryChange = (e) => setSearchQuery(e.target.value);
+
+  const handleSentimentAnalysisLibraryChange = (e) => setSentimentAnalysisLibrary(e.target.value);
 
   useEffect(() => {
     // Setting the navbar type
@@ -174,6 +184,12 @@ function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
                   backgroundColor: "info.main !important",
                 })}
               />
+              <select
+                value={sentimentAnalysisLibrary}
+                onChange={handleSentimentAnalysisLibraryChange}
+              >
+                {libraries.map((library) => <option key={library} value={library.toLowerCase()}>{library}</option>)}
+              </select>
               <VuiButton onClick={handleSearch} color="primary">Search</VuiButton>
             </VuiBox>
             <VuiBox color={light ? "white" : "inherit"}>
