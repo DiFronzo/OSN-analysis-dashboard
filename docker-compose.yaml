@@ -1,11 +1,11 @@
 version: "3.9"
 services:
   server:
-    build:  ./backend
+    build: ./backend
     ports:
-  - "5000:5000"
+      - "5000:5000"
     volumes:
-    - ./backend:/app
+      - ./backend:/app
     environment:
       FLASK_ENV: development
   web:
