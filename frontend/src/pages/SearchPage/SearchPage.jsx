@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   FormLabel,
+  MenuItem,
   Select,
   Slider,
   TextField,
@@ -23,8 +24,11 @@ const StyledForm = styled.form(() => ({
   justifyContent: 'center',
 }));
 
+const libraries = ['TextBlob', 'VADER'];
+
 function SearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [library, setLibrary] = useState(libraries[0].toLowerCase());
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [advancedData, setAdvancedData] = useState({
     amount: MIN_POSTS,
@@ -43,6 +47,8 @@ function SearchPage() {
     setAdvancedData({ ...advancedData, [e.target.name]: value });
   };
 
+  const handleChangeLibrary = (e) => setLibrary(e.target.value);
+
   const handleSubmit = (e) => {
     e.preventDefault();
   };
@@ -59,14 +65,22 @@ function SearchPage() {
         paddingTop: '15em',
       }}>
       <StyledForm onSubmit={handleSubmit}>
-        <TextField
-          value={searchQuery}
-          onChange={handleSearchQueryChange}
-          variant="outlined"
-          type="search"
-          sx={{ width: '100%' }}
-          required
-        />
+        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
+          <TextField
+            value={searchQuery}
+            onChange={handleSearchQueryChange}
+            variant="outlined"
+            type="search"
+            sx={{ width: '100%' }}
+            required
+          />
+          <Select value={library} onChange={handleChangeLibrary}>
+            {libraries &&
+              libraries.map((lib) => (
+                <MenuItem value={lib.toLowerCase()}>{lib}</MenuItem>
+              ))}
+          </Select>
+        </Box>
         <Box
           sx={{
             width: '100%',
