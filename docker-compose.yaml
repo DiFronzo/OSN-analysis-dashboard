@@ -4,10 +4,11 @@ services:
     build: ./backend
     ports:
       - "5000:5000"
+    entrypoint: python app.py  
     volumes:
       - ./backend:/app
-    environment:
-      FLASK_ENV: development
+    env_file:
+      - ./.env
   web:
     build: ./frontend
     ports:
@@ -16,3 +17,8 @@ services:
       - ./frontend:/user/src/app
     depends_on:
       - server
+  redis:
+    image: redis
+    container_name: redis-container
+    ports:
+      - "6379:6379"
