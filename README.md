@@ -38,8 +38,12 @@ We will use Docker Compose to manage the instance of web, cache (Radis), and API
 api_key = Your Keys
 api_key_secret = Your Keys
 ```
+cd into the top folder, and make a copy of `.env_example` to `.env`
+```bash
+$ cp .env_example .env
+```
 
-We can start the application with just one simple command from the top folder:
+We can start the application with just one simple command:
 ```bash
 $ docker-compose up
 ```
