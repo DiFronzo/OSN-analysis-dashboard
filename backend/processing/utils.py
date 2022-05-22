@@ -2,6 +2,8 @@ import re
 
 import pandas as pd
 from textblob import TextBlob
+from flair.models import TextClassifier
+from flair.data import Sentence
 
 
 def extract_mentions(text: str) -> list:
@@ -14,6 +16,29 @@ def extract_hastag(text: str) -> list:
 
 def get_subjectivity(text: str) -> tuple:
     return TextBlob(text).sentiment.subjectivity
+
+
+# Perform sentiment analysis with flair
+def get_polarity_flair(text: str) -> tuple:
+    classifier = TextClassifier.load('en-sentiment')
+    sentence = Sentence(text)
+    classifier.predict(sentence)
+    value = text.labels[0].to_dict()['value']
+    if value == 'POSITIVE':
+        return round(sentence.labels[0].to_dict()['confidence'], 3)
+    else:
+        return round(-sentence.labels[0].to_dict()['confidence'], 3)
+
+
+def get_analysis_flair(text: str) -> tuple:
+    classifier = TextClassifier.load('en-sentiment')
+    sentence = Sentence(text)
+    classifier.predict(sentence)
+    value = text.labels[0].to_dict()['value']
+    if value == 'POSITIVE':
+        return 'Positive'
+    else:
+        return 'Negative'
 
 
 # Create a function to get the polarity

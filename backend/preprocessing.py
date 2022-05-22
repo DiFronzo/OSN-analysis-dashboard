@@ -7,7 +7,8 @@ import pandas as pd
 import tweepy
 from tweepy.cursor import ItemIterator
 
-from processing.utils import extract_mentions, extract_hastag, get_analysis, get_subjectivity, get_polarity
+from processing.utils import extract_mentions, extract_hastag, get_analysis, get_subjectivity, get_polarity, \
+     get_polarity_flair, get_analysis_flair
 
 
 class Preprocessing:
@@ -134,9 +135,9 @@ class Preprocessing:
         data = data[~data["tweets"].str.contains('|'.join(discard))]
 
         data['subjectivity'] = data['tweets'].apply(get_subjectivity)
-        data['polarity'] = data['tweets'].apply(get_polarity)
+        data['polarity'] = data['tweets'].apply(get_polarity_flair)
 
-        data['analysis'] = data['polarity'].apply(get_analysis)
+        data['analysis'] = data['polarity'].apply(get_analysis_flair)
 
         # word counter for top 15
         # TODO! remove the word_query word sent by the user
