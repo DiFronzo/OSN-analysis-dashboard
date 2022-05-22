@@ -11,6 +11,10 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
+import charts from '../../services/charts';
+
+import { useSearchContext } from '../../contexts/search';
 
 const MIN_POSTS = 100;
 const MAX_POSTS = 1000;
@@ -27,7 +31,7 @@ const StyledForm = styled.form(() => ({
 const libraries = ['TextBlob', 'VADER'];
 
 function SearchPage() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [library, setLibrary] = useState(libraries[0].toLowerCase());
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [advancedData, setAdvancedData] = useState({
@@ -36,8 +40,16 @@ function SearchPage() {
     from: '',
     to: '',
   });
+  const navigate = useNavigate();
+  const { setQuery, setResults } = useSearchContext();
 
-  const handleSearchQueryChange = (e) => setSearchQuery(e.target.value);
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  console.log(data, error, isLoading);
+
+  const handleSearchTermChange = (e) => setSearchTerm(e.target.value);
 
   const handleAdvancedOptionChange = (e) => {
     let { value } = e.target;
@@ -49,8 +61,23 @@ function SearchPage() {
 
   const handleChangeLibrary = (e) => setLibrary(e.target.value);
 
-  const handleSubmit = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setQuery(searchTerm);
+    try {
+      const response = await charts.getPieChartData(searchTerm);
+      setResults(response.data);
+      setError(null);
+      navigate(
+        '/dashboard' /* , { state: { data: response.data, searchQuery } } */,
+      );
+      return;
+    } catch (err) {
+      setData(null);
+      setError(err.response);
+    }
+    setIsLoading(false);
   };
 
   const handleShowAdvanced = () => setShowAdvanced(!showAdvanced);
@@ -64,47 +91,45 @@ function SearchPage() {
         justifyContent: 'center',
         paddingTop: '15em',
       }}>
-      <StyledForm onSubmit={handleSubmit}>
+      <StyledForm onSubmit={handleSearch}>
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
           <TextField
-            value={searchQuery}
-            onChange={handleSearchQueryChange}
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={handleSearchTermChange}
             variant="outlined"
             type="search"
             sx={{ width: '100%' }}
             required
           />
-          <Select value={library} onChange={handleChangeLibrary}>
+          <Select
+            value={library}
+            onChange={handleChangeLibrary}
+            sx={{ width: '10em' }}>
             {libraries &&
               libraries.map((lib) => (
-                <MenuItem value={lib.toLowerCase()}>{lib}</MenuItem>
+                <MenuItem key={lib} value={lib.toLowerCase()}>
+                  {lib}
+                </MenuItem>
               ))}
           </Select>
         </Box>
-        <Box
-          sx={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-          }}>
-          <Button
-            startIcon={<SearchIcon />}
-            type="submit"
-            variant="contained"
-            color="primary"
-            sx={{ width: '10em', margin: '0.5em' }}>
-            Search
-          </Button>
-          <Button
-            startIcon={<MenuIcon />}
-            onClick={handleShowAdvanced}
-            variant="contained"
-            color="secondary"
-            sx={{ width: '10em', margin: '0.5em' }}>
-            Advanced
-          </Button>
-        </Box>
+        <Button
+          startIcon={<SearchIcon />}
+          type="submit"
+          variant="contained"
+          color="primary"
+          sx={{ width: '10em', margin: '0.5em 0.25em' }}>
+          Search
+        </Button>
+        <Button
+          startIcon={<MenuIcon />}
+          onClick={handleShowAdvanced}
+          variant="contained"
+          color="secondary"
+          sx={{ width: '10em', margin: '0.5em 0.25em' }}>
+          Advanced
+        </Button>
         {showAdvanced && (
           <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
             <Box

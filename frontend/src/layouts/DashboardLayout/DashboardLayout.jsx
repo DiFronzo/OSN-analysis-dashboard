@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Box,
@@ -14,7 +14,10 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
 import styled from '@emotion/styled';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useSearchContext } from '../../contexts/search';
+import charts from '../../services/charts';
+import data from '../../services/data';
 
 const MIN_POSTS = 100;
 const MAX_POSTS = 1000;
@@ -26,7 +29,7 @@ const StyledForm = styled.form(() => ({
 }));
 
 function DashboardLayout({ children }) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [library, setLibrary] = useState(libraries[0].toLowerCase());
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [advancedData, setAdvancedData] = useState({
@@ -36,7 +39,21 @@ function DashboardLayout({ children }) {
     to: '',
   });
 
-  const handleSearchQueryChange = (e) => setSearchQuery(e.target.value);
+  const {
+    query,
+    setQuery,
+    setResults,
+    error,
+    setError,
+    isLoading,
+    setIsLoading,
+  } = useSearchContext();
+
+  const location = useLocation();
+
+  console.log(error, isLoading);
+
+  const handleSearchTermChange = (e) => setSearchTerm(e.target.value);
   const handleChangeLibrary = (e) => setLibrary(e.target.value);
 
   const handleShowAdvanced = () => setShowAdvanced(!showAdvanced);
@@ -49,8 +66,30 @@ function DashboardLayout({ children }) {
     setAdvancedData({ ...advancedData, [e.target.name]: value });
   };
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    setSearchTerm(query);
+  }, [query]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setQuery(searchTerm);
+    try {
+      let response;
+      if (location.pathname === '/dashboard') {
+        response = await charts.getPieChartData(searchTerm);
+      } else if (location.pathname === '/table') {
+        response = await data.getData(searchTerm);
+      } else {
+        throw new Error('Wrong pathname');
+      }
+      setResults(response.data);
+      setError(null);
+    } catch (err) {
+      setResults(null);
+      setError(err.response);
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -59,33 +98,31 @@ function DashboardLayout({ children }) {
         <StyledForm onSubmit={handleSubmit}>
           <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
             <TextField
-              value={searchQuery}
-              onChange={handleSearchQueryChange}
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={handleSearchTermChange}
               variant="outlined"
               type="search"
               sx={{ width: '100%' }}
               required
             />
-            <Select value={library} onChange={handleChangeLibrary}>
+            <Select
+              value={library}
+              onChange={handleChangeLibrary}
+              sx={{ width: '12em' }}>
               {libraries &&
                 libraries.map((lib) => (
-                  <MenuItem value={lib.toLowerCase()}>{lib}</MenuItem>
+                  <MenuItem key={lib} value={lib.toLowerCase()}>
+                    {lib}
+                  </MenuItem>
                 ))}
             </Select>
-          </Box>
-          <Box
-            sx={{
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-            }}>
             <Button
               startIcon={<SearchIcon />}
               type="submit"
               variant="contained"
               color="primary"
-              sx={{ width: '10em', margin: '0.5em' }}>
+              sx={{ width: '15em', marginLeft: '0.5em' }}>
               Search
             </Button>
             <Button
@@ -93,13 +130,18 @@ function DashboardLayout({ children }) {
               onClick={handleShowAdvanced}
               variant="contained"
               color="secondary"
-              sx={{ width: '10em', margin: '0.5em' }}>
+              sx={{ width: '15em', marginLeft: '0.5em' }}>
               Advanced
             </Button>
           </Box>
           {showAdvanced && (
             <Box
-              sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+              sx={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                marginTop: '1em',
+              }}>
               <Box
                 sx={{
                   width: '100%',

@@ -9,14 +9,10 @@ import {
   tableCellClasses,
   TablePagination,
 } from '@mui/material';
-/* import {
-  DataGrid,
-  GridToolbarContainer,
-  GridToolbarExport,
-} from '@mui/x-data-grid'; */
 import styled from '@emotion/styled';
-// import { Box } from '@mui/material';
 import DashboardLayout from '../../layouts/DashboardLayout';
+import { useSearchContext } from '../../contexts/search';
+import data from '../../services/data';
 
 const StyledTableCell = styled(TableCell)(() => ({
   [`&.${tableCellClasses.head}`]: {
@@ -30,38 +26,67 @@ const StyledTableRow = styled(TableRow)(() => ({
   },
 }));
 
-/*
-function ExportToolbar() {
-  return (
-    <GridToolbarContainer>
-      <GridToolbarExport />
-    </GridToolbarContainer>
-  );
-}
-*/
-
 function TablePage() {
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(0);
-  const [data, setData] = useState([
-    {
-      user: 'Roger',
-      post: 'This is an angry letter to you.',
-      location: 'California',
-      date: '2022-01-01',
-      verdict: 'Negative',
-      polarity: -0.7,
-    },
-  ]);
+
+  const {
+    query,
+    results,
+    setResults,
+    error,
+    setError,
+    isLoading,
+    setIsLoading,
+  } = useSearchContext();
+
+  console.log(error, isLoading);
+
+  const formatTableData = () => {
+    if (!results) {
+      return null;
+    }
+    return results.raw_data.map(
+      ({
+        analysis,
+        date,
+        location,
+        polarity,
+        // eslint-disable-next-line camelcase
+        screen_name,
+        tweets,
+        subjectivity,
+      }) => ({
+        // eslint-disable-next-line camelcase
+        user: screen_name,
+        post: tweets,
+        location,
+        date: new Date(date).toISOString(),
+        verdict: analysis,
+        polarity,
+        subjectivity,
+      }),
+    );
+  };
 
   useEffect(() => {
-    const fetchData = () => {
-      // Fetch data
-      // ...
-      setData(data);
+    if (results?.raw_data || isLoading) {
+      return;
+    }
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const response = await data.getData(query);
+        setResults(response.data);
+        setError(null);
+      } catch (err) {
+        setResults(null);
+        setError(err.response);
+      }
+      setIsLoading(false);
     };
     fetchData();
-  }, [data]);
+  }, [results, query, setError, isLoading, setIsLoading, setResults]);
 
   const handlePageSizeChange = (size) => {
     setPageSize(size);
@@ -75,58 +100,31 @@ function TablePage() {
 
   return (
     <DashboardLayout>
-      {/* <Box height="40em" display="flex">
-        <Box sx={{ flexGrow: 1 }}>
-          <DataGrid
-            columns={[
-              { field: 'user', headerName: 'User' },
-              { field: 'post', headerName: 'Post' },
-              { field: 'location', headerName: 'Location' },
-              { field: 'date', headerName: 'Date' },
-              { field: 'verdict', headerName: 'Verdict' },
-              { field: 'polarity', headerName: 'Polarity' },
-            ]}
-            rows={data}
-            getRowId={() => {
-              counter += 1;
-              return counter;
-            }}
-            pageSize={pageSize}
-            page={page}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
-            rowsPerPageOptions={[10, 25, 50]}
-            components={{ Toolbar: ExportToolbar }}
-            pagination
-          />
-        </Box>
-      </Box> */}
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
               <StyledTableCell>User</StyledTableCell>
               <StyledTableCell>Post</StyledTableCell>
-              <StyledTableCell align="right">Location</StyledTableCell>
-              <StyledTableCell align="right">Date</StyledTableCell>
-              <StyledTableCell align="right">Verdict</StyledTableCell>
-              <StyledTableCell align="right">Polarity</StyledTableCell>
+              <StyledTableCell>Location</StyledTableCell>
+              <StyledTableCell>Date</StyledTableCell>
+              <StyledTableCell>Verdict</StyledTableCell>
+              <StyledTableCell>Polarity</StyledTableCell>
+              <StyledTableCell>Subjectivity</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data &&
-              data.map((row, i) => (
+            {results &&
+              results?.raw_data &&
+              formatTableData().map((item, i) => (
                 <StyledTableRow key={createKey(i)}>
-                  <StyledTableCell>{row.user}</StyledTableCell>
-                  <StyledTableCell>{row.post}</StyledTableCell>
-                  <StyledTableCell align="right">
-                    {row.location}
-                  </StyledTableCell>
-                  <StyledTableCell align="right">{row.date}</StyledTableCell>
-                  <StyledTableCell align="right">{row.verdict}</StyledTableCell>
-                  <StyledTableCell align="right">
-                    {row.polarity}
-                  </StyledTableCell>
+                  <StyledTableCell>{item.user}</StyledTableCell>
+                  <StyledTableCell>{item.post}</StyledTableCell>
+                  <StyledTableCell>{item.location}</StyledTableCell>
+                  <StyledTableCell>{item.date}</StyledTableCell>
+                  <StyledTableCell>{item.verdict}</StyledTableCell>
+                  <StyledTableCell>{item.polarity}</StyledTableCell>
+                  <StyledTableCell>{item.subjectivity}</StyledTableCell>
                 </StyledTableRow>
               ))}
           </TableBody>
@@ -135,7 +133,7 @@ function TablePage() {
       <TablePagination
         rowsPerPageOptions={[10, 25, 50]}
         component="div"
-        count={data.length}
+        count={results?.raw_data?.length || 0}
         rowsPerPage={pageSize}
         page={page}
         onPageChange={handlePageChange}
