@@ -81,7 +81,7 @@ function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [library, setLibrary] = useState('');
 
-  const [searchResults, setSearchResults] = useState(null);
+  // const [searchResults, setSearchResults] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -93,7 +93,7 @@ function Dashboard() {
     const queryParamString = queryString(advanced);
     // get the data from the api
     let data;
-    if (!queryParamString) {
+    if (!showAdvanced || !queryParamString) {
       data = await fetch(`http://127.0.0.1:5000/pie/${search}?number_of_tweets=100&library=${lib}`);
     } else {
       data = await fetch(`http://127.0.0.1:5000/pie/${search}${queryParamString}&number_of_tweets=100&library=${lib}`);
@@ -110,7 +110,8 @@ function Dashboard() {
   const handleSearch = async () => {
     setIsLoading(true);
     if (!searchTerm) {
-      setSearchResults(null);
+      // setSearchResults(null);
+      setPolarity(null);
       setError(false);
       setIsLoading(false);
       return;
@@ -120,7 +121,7 @@ function Dashboard() {
     try {
       await fetchPieData(searchTerm, library);
 		} catch (err) {
-			setSearchResults(null);
+			setPolarity(null);
 			setError(err);
 		}
 		setIsLoading(false);
@@ -132,6 +133,8 @@ function Dashboard() {
     console.log(showAdvanced);
     fetchPieData(searchQuery, sentimentAnalysisLibrary, showAdvanced ? advancedOptions : null);
   }, []);
+
+  console.log("rerender");
 
   return (
     <DashboardLayout>
