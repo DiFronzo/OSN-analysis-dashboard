@@ -87,7 +87,6 @@ function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
   }
 
   useEffect(() => {
-    console.log("set search term and sentiment analysis library :)");
     setSearchTerm(searchQuery);
     setLibrary(sentimentAnalysisLibrary);
   }, [setSearchTerm, searchQuery, setLibrary, sentimentAnalysisLibrary]);

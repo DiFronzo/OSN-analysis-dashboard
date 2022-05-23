@@ -25,7 +25,6 @@ function Search() {
 	const history = useHistory();
 
 	const handleSearch = async () => {
-		console.log(searchQuery, sentimentAnalysisLibrary);
 		if (!searchQuery || !sentimentAnalysisLibrary) {
 			return;
 		}

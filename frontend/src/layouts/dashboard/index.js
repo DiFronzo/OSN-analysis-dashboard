@@ -16,7 +16,7 @@
 
 */
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -81,7 +81,6 @@ function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [library, setLibrary] = useState('');
 
-  // const [searchResults, setSearchResults] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -92,7 +91,6 @@ function Dashboard() {
   const fetchPieData = async (search, lib, advanced = null) => {
     setIsLoading(true);
     if (!search || !lib) {
-      // setSearchResults(null);
       setPolarity([]);
       setError(null);
       setIsLoading(false);
