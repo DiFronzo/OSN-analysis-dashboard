@@ -65,6 +65,7 @@ import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
 // Sentiment analysis libraries
 import { libraries } from '../../../data/libraries';
 import { useSearchContext } from "contexts/Search";
+import Select from "components/Select";
 
 function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
   const [navbarType, setNavbarType] = useState();
@@ -189,12 +190,14 @@ function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
                   backgroundColor: "info.main !important",
                 })}
               />
-              <select
+              <Select
                 value={library}
                 onChange={handleLibraryChange}
-              >
-                {libraries.map((lib) => <option key={lib} value={lib}>{lib}</option>)}
-              </select>
+                options={libraries}
+                key="key"
+                valueKey="key"
+                textKey="name"
+              />
               <VuiButton onClick={handleSubmit} color="primary">Search</VuiButton>
             </VuiBox>
             <VuiBox color={light ? "white" : "inherit"}>

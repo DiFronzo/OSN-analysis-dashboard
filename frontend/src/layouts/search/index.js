@@ -10,6 +10,7 @@ import { useSearchContext } from "contexts/Search";
 // Sentiment analysis libraries
 import { libraries } from "data/libraries";
 import { FormLabel, Slider } from "@mui/material";
+import Select from "components/Select";
 
 function Search() {
 	const { 
@@ -63,12 +64,14 @@ function Search() {
 						onChange={handleQueryChange}
 						sx={{ m: '0.5em' }} 
 					/>
-					<select
+					<Select
 						value={sentimentAnalysisLibrary}
 						onChange={handleSentimentAnalysisLibraryChange}
-					>
-						{libraries.map((library) => <option key={library} value={library}>{library}</option>)}
-					</select>
+						options={libraries}
+						key="key"
+						valueKey="key"
+						textKey="name"
+					/>
 					<VuiButton onClick={handleSearch} color="primary" sx={{ m: '0.5em' }}>Search</VuiButton>
 					<VuiButton onClick={handleShowAdvancedOptions} color="dark" sx={{ m: '0.5em' }}>Advanced</VuiButton>
 					{showAdvanced && (
