@@ -67,7 +67,7 @@ function Tables() {
 
   const fetchTableData = async (search, lib) => {
     setIsLoading(true);
-    if (!search) {
+    if (!search || !lib) {
       setList([]);
       setError(null);
       setIsLoading(false);
@@ -98,10 +98,6 @@ function Tables() {
 			setError(err);
 		}
 		setIsLoading(false);
-  }
-  
-  const handleSearch = async () => {
-    await fetchTableData(searchTerm, library);
   }
 
   useEffect(() => { 
@@ -145,7 +141,7 @@ function Tables() {
         setSearchTerm={setSearchTerm} 
         library={library}
         setLibrary={setLibrary}
-        handleSearch={handleSearch} 
+        handleSearch={fetchTableData} 
       />
       <VuiBox py={3}>
         <VuiBox mb={3}>

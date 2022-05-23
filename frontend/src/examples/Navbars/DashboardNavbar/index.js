@@ -64,16 +64,33 @@ import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
 
 // Sentiment analysis libraries
 import { libraries } from '../../../data/libraries';
+import { useSearchContext } from "contexts/Search";
 
-function DashboardNavbar({ absolute, light, isMini, searchTerm, library, setSearchTerm, setLibrary, handleSearch }) {
+function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useVisionUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [library, setLibrary] = useState('');
+  // const [isSet, setIsSet] = useState(false);
+
+  const { searchQuery, sentimentAnalysisLibrary } = useSearchContext();
+
   const handleSearchTermChange = (e) => setSearchTerm(e.target.value);
   const handleLibraryChange = (e) => setLibrary(e.target.value);
+
+  const handleSubmit = async () => {
+    await handleSearch(searchTerm, library);
+  }
+
+  useEffect(() => {
+    console.log("set search term and sentiment analysis library :)");
+    setSearchTerm(searchQuery);
+    setLibrary(sentimentAnalysisLibrary);
+  }, [setSearchTerm, searchQuery, setLibrary, sentimentAnalysisLibrary]);
 
   useEffect(() => {
     // Setting the navbar type
@@ -179,7 +196,7 @@ function DashboardNavbar({ absolute, light, isMini, searchTerm, library, setSear
               >
                 {libraries.map((lib) => <option key={lib} value={lib}>{lib}</option>)}
               </select>
-              <VuiButton onClick={handleSearch} color="primary">Search</VuiButton>
+              <VuiButton onClick={handleSubmit} color="primary">Search</VuiButton>
             </VuiBox>
             <VuiBox color={light ? "white" : "inherit"}>
               <Link to="/authentication/sign-in">

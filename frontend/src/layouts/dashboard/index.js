@@ -90,51 +90,43 @@ function Dashboard() {
 
   // Fetch data for pie chart
   const fetchPieData = async (search, lib, advanced = null) => {
-    const queryParamString = queryString(advanced);
-    // get the data from the api
-    let data;
-    if (!showAdvanced || !queryParamString) {
-      data = await fetch(`http://127.0.0.1:5000/pie/${search}?number_of_tweets=100&library=${lib}`);
-    } else {
-      data = await fetch(`http://127.0.0.1:5000/pie/${search}${queryParamString}&number_of_tweets=100&library=${lib}`);
-    }
-    
-    // convert the data to json
-    const json = await data.json();
-    let result = await json.polarity?.map(({ analysis }) => analysis);
-
-    // set state with the result
-    setPolarity(result);
-  }
-  
-  const handleSearch = async () => {
     setIsLoading(true);
-    if (!searchTerm) {
+    if (!search || !lib) {
       // setSearchResults(null);
-      setPolarity(null);
-      setError(false);
+      setPolarity([]);
+      setError(null);
       setIsLoading(false);
       return;
     }
-    setSearchQuery(searchTerm);
-    setSentimentAnalysisLibrary(library);
+    setSearchQuery(search);
+    setSentimentAnalysisLibrary(lib);
+    const queryParamString = queryString(advanced);
     try {
-      await fetchPieData(searchTerm, library);
-		} catch (err) {
-			setPolarity(null);
-			setError(err);
-		}
-		setIsLoading(false);
-  };
+      // get the data from the api
+      let data;
+      if (!showAdvanced || !queryParamString) {
+        data = await fetch(`http://127.0.0.1:5000/pie/${search}?number_of_tweets=100&library=${lib}`);
+      } else {
+        data = await fetch(`http://127.0.0.1:5000/pie/${search}${queryParamString}&number_of_tweets=100&library=${lib}`);
+      }
+      
+      // convert the data to json
+      const json = await data.json();
+      let result = await json.polarity?.map(({ analysis }) => analysis);
+      setPolarity(result);
+      setError(null);
+    } catch (err) {
+      setPolarity([]);
+      setError(err);
+    }
+    setIsLoading(false);
+  }
 
   useEffect(() => {
     setSearchTerm(searchQuery);
     setLibrary(sentimentAnalysisLibrary);
-    console.log(showAdvanced);
     fetchPieData(searchQuery, sentimentAnalysisLibrary, showAdvanced ? advancedOptions : null);
   }, []);
-
-  console.log("rerender");
 
   return (
     <DashboardLayout>
@@ -143,7 +135,7 @@ function Dashboard() {
         setSearchTerm={setSearchTerm} 
         library={library} 
         setLibrary={setLibrary} 
-        handleSearch={handleSearch} 
+        handleSearch={fetchPieData} 
       />
       <VuiBox py={3}>
         <VuiBox mb={3}>
