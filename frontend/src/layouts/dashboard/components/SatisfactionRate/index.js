@@ -5,9 +5,6 @@ import VuiBox from "components/VuiBox";
 import VuiTypography from "components/VuiTypography";
 
 import PieChart from "components/charts/pieCharts";
-import { Author, GetAnalysis, Polarity, StandardText } from "../../../tables/data/authorsTableData";
-
-export const pieChartDataCharts1 = [70, 10, 20];
 
 export const pieChartOptionsCharts1 = {
   labels: ["Positive", "Neutral", "Negative"],
@@ -54,31 +51,7 @@ export const pieChartOptionsCharts1 = {
   }
 };
 
-const SatisfactionRate = () => {
-  const [polarity, setPolarity] = useState([]);
-
-  // TODO! what if there are only 3 val? should be fixed in python api.
-  useEffect(() => {
-    // declare the async data fetching function
-    const fetchData = async () => {
-      // get the data from the api
-      const data = await fetch('http://127.0.0.1:5000/pie/ok?number_of_tweets=100');
-      // convert the data to json
-      const json = await data.json();
-      let result = await json.polarity?.map((item) => {
-        return item.analysis;
-      });
-
-      // set state with the result
-      setPolarity(result);
-    }
-
-    // call the function
-    fetchData()
-    // make sure to catch any error
-    //.catch(console.error);
-  }, [])
-
+const SatisfactionRate = ({ polarity }) => {
   return (
     <Card sx={{ height: "340px",  alignSelf: "center"  }}>
       <VuiBox display="flex" flexDirection="column">
@@ -101,11 +74,10 @@ const SatisfactionRate = () => {
             sx={{ width: "250px", height: "250px" }}
           >
             {polarity.length > 0 ? (
-            <PieChart
-              chartData={polarity}
-              chartOptions={pieChartOptionsCharts1}
-
-            />
+              <PieChart
+                data={polarity}
+                options={pieChartOptionsCharts1}
+              />
             ) : (<p>Loading..</p>)}
           </VuiBox>
 

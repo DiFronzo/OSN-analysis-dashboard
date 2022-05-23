@@ -19,7 +19,7 @@
 import { useState, useEffect } from "react";
 
 // react-router components
-import { useLocation, Link, useHistory } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
@@ -62,29 +62,18 @@ import {
 import team2 from "assets/images/team-2.jpg";
 import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
 
-// Search context
-import { useSearchContext } from "contexts/Search";
-
 // Sentiment analysis libraries
 import { libraries } from '../../../data/libraries';
 
-function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
+function DashboardNavbar({ absolute, light, isMini, searchTerm, library, setSearchTerm, setLibrary, handleSearch }) {
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useVisionUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
 
-  const { 
-    searchQuery, 
-    setSearchQuery, 
-    sentimentAnalysisLibrary, 
-    setSentimentAnalysisLibrary 
-  } = useSearchContext();
-
-  const handleQueryChange = (e) => setSearchQuery(e.target.value);
-
-  const handleSentimentAnalysisLibraryChange = (e) => setSentimentAnalysisLibrary(e.target.value);
+  const handleSearchTermChange = (e) => setSearchTerm(e.target.value);
+  const handleLibraryChange = (e) => setLibrary(e.target.value);
 
   useEffect(() => {
     // Setting the navbar type
@@ -171,8 +160,8 @@ function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
             <VuiBox pr={1} display="flex">
               <VuiInput
                 placeholder="Type here..."
-                value={searchQuery}
-                onChange={handleQueryChange}
+                value={searchTerm}
+                onChange={handleSearchTermChange}
                 icon={{ component: "search", direction: "left" }}
                 sx={({ breakpoints }) => ({
                   [breakpoints.down("sm")]: {
@@ -185,10 +174,10 @@ function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
                 })}
               />
               <select
-                value={sentimentAnalysisLibrary}
-                onChange={handleSentimentAnalysisLibraryChange}
+                value={library}
+                onChange={handleLibraryChange}
               >
-                {libraries.map((library) => <option key={library} value={library.toLowerCase()}>{library}</option>)}
+                {libraries.map((lib) => <option key={lib} value={lib}>{lib}</option>)}
               </select>
               <VuiButton onClick={handleSearch} color="primary">Search</VuiButton>
             </VuiBox>

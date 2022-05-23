@@ -51,32 +51,64 @@ function Tables() {
     { name: "subjectivity", align: "center" },
   ]
 
-  const { searchQuery } = useSearchContext();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [library, setLibrary] = useState('');
+
+  const { 
+    searchQuery, 
+    setSearchQuery, 
+    sentimentAnalysisLibrary, 
+    setSentimentAnalysisLibrary
+  } = useSearchContext();
 
   const [searchResults, setSearchResults] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  
-  const handleSearch = async () => {
+
+  const fetchTableData = async (search, lib) => {
     setIsLoading(true);
-    if (!searchQuery) {
-      setSearchResults(null);
-      setError(false);
+    if (!search) {
+      setList([]);
+      setError(null);
       setIsLoading(false);
+      return;
     }
+    setSearchQuery(search);
+    setSentimentAnalysisLibrary(lib);
     try {
-			const data = await fetch(`http://127.0.0.1:5000/raw_data/${searchQuery}`);
+			const data = await fetch(`http://127.0.0.1:5000/raw_data/${search}?library=${lib}`);
 			const json = await data.json();
-			setSearchResults(json);
+      let result = await json.raw_data?.map((item) => {
+        let dateTime = new Date(item.date);
+        return {
+          tweet: <Author image={item.profile_img}
+                          tweet={item.tweets}
+                          name={item.screen_name} />,
+          polarity: <Polarity status={GetAnalysis(parseFloat(item.polarity))} />,
+          location: <StandardText text={item.location} />,
+          polarity_val: <StandardText text={item.polarity} />,
+          date: <StandardText text={dateTime.toISOString()} />,
+          subjectivity: <StandardText text={item.subjectivity} />
+        }}
+      )
+			setList(result);
 			setError(null);
 		} catch (err) {
-			setSearchResults(null);
+			setList([]);
 			setError(err);
 		}
 		setIsLoading(false);
   }
+  
+  const handleSearch = async () => {
+    await fetchTableData(searchTerm, library);
+  }
 
-  useEffect(handleSearch, []);
+  useEffect(() => { 
+    setSearchTerm(searchQuery);
+    setLibrary(sentimentAnalysisLibrary);
+    fetchTableData(searchQuery, sentimentAnalysisLibrary);
+  }, []);
   
   //const { columns, rows } = authorsTableData;
   //const { columns: prCols, rows: prRows } = projectsTableData;
@@ -108,7 +140,13 @@ function Tables() {
 
   return (
     <DashboardLayout>
-      <DashboardNavbar handleSearch={handleSearch} />
+      <DashboardNavbar 
+        searchTerm={searchTerm} 
+        setSearchTerm={setSearchTerm} 
+        library={library}
+        setLibrary={setLibrary}
+        handleSearch={handleSearch} 
+      />
       <VuiBox py={3}>
         <VuiBox mb={3}>
           <Card>
@@ -142,7 +180,7 @@ function Tables() {
                 },
               }}
             >
-              {list.length > 0 ? (<Table columns={columns} rows={list} /> ) : (<p>Loading...</p>) }
+              {list.length > 0 ? (<Table columns={columns} rows={list} />) : (<p>Loading...</p>) }
             </VuiBox>
           </Card>
         </VuiBox>

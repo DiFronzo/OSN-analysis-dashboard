@@ -10,7 +10,8 @@ const { Provider } = SearchContext;
 
 function SearchProvider({ children }) {
 	const [searchQuery, setSearchQuery] = useState('');
-	const [sentimentAnalysisLibrary, setSentimentAnalysisLibrary] = useState(libraries[0].toLowerCase());
+	const [sentimentAnalysisLibrary, setSentimentAnalysisLibrary] = useState(libraries[0]);
+	const [showAdvanced, setShowAdvanced] = useState(false);
 	const [advancedOptions, setAdvancedOptions] = useState({
 		amount: 100,
 		region: '',
@@ -25,6 +26,8 @@ function SearchProvider({ children }) {
 				setSearchQuery,
 				sentimentAnalysisLibrary,
 				setSentimentAnalysisLibrary,
+				showAdvanced,
+				setShowAdvanced,
 				advancedOptions,
 				setAdvancedOptions
 			}}

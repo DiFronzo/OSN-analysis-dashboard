@@ -56,6 +56,7 @@ const routes = [
   {
     type: "search",
     route: "/",
+    key: "search",
     component: Search
   },
   {

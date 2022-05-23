@@ -17,14 +17,16 @@ function Search() {
 		setSearchQuery,
 		sentimentAnalysisLibrary,
 		setSentimentAnalysisLibrary,
+		showAdvanced,
+		setShowAdvanced,
 		advancedOptions,
 		setAdvancedOptions
 	} = useSearchContext();
-	const [showAdvanced, setShowAdvanced] = useState(false);
 	const history = useHistory();
 
 	const handleSearch = async () => {
-		if (!searchQuery) {
+		console.log(searchQuery, sentimentAnalysisLibrary);
+		if (!searchQuery || !sentimentAnalysisLibrary) {
 			return;
 		}
 		history.push(`/dashboard`);
@@ -66,7 +68,7 @@ function Search() {
 						value={sentimentAnalysisLibrary}
 						onChange={handleSentimentAnalysisLibraryChange}
 					>
-						{libraries.map((library) => <option key={library} value={library.toLowerCase()}>{library}</option>)}
+						{libraries.map((library) => <option key={library} value={library}>{library}</option>)}
 					</select>
 					<VuiButton onClick={handleSearch} color="primary" sx={{ m: '0.5em' }}>Search</VuiButton>
 					<VuiButton onClick={handleShowAdvancedOptions} color="dark" sx={{ m: '0.5em' }}>Advanced</VuiButton>
