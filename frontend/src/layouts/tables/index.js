@@ -37,6 +37,9 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Icon from "@mui/material/Icon";
 
+// Search context
+import { useSearchContext } from "contexts/Search";
+
 function Tables() {
   const [list, setList] = useState([]);
   const columns = [
@@ -48,13 +51,33 @@ function Tables() {
     { name: "subjectivity", align: "center" },
   ]
 
-  useEffect(() => {
-    // declare the async data fetching function
-    const fetchData = async () => {
-      // get the data from the api
-      const data = await fetch('http://127.0.0.1:5000/raw_data/Trump?number_of_tweets=20&function_option=&lang_opt=en');
-      // convert the data to json
-      const json = await data.json();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [library, setLibrary] = useState('');
+
+  const { 
+    searchQuery, 
+    setSearchQuery, 
+    sentimentAnalysisLibrary, 
+    setSentimentAnalysisLibrary
+  } = useSearchContext();
+
+  const [searchResults, setSearchResults] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchTableData = async (search, lib) => {
+    setIsLoading(true);
+    if (!search || !lib) {
+      setList([]);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+    setSearchQuery(search);
+    setSentimentAnalysisLibrary(lib);
+    try {
+			const data = await fetch(`http://127.0.0.1:5000/raw_data/${search}?library=${lib}`);
+			const json = await data.json();
       let result = await json.raw_data?.map((item) => {
         let dateTime = new Date(item.date);
         return {
@@ -68,16 +91,21 @@ function Tables() {
           subjectivity: <StandardText text={item.subjectivity} />
         }}
       )
+			setList(result);
+			setError(null);
+		} catch (err) {
+			setList([]);
+			setError(err);
+		}
+		setIsLoading(false);
+  }
 
-      // set state with the result
-      setList(result);
-    }
-
-    // call the function
-    fetchData()
-      // make sure to catch any error
-      //.catch(console.error);
-  }, [])
+  useEffect(() => { 
+    setSearchTerm(searchQuery);
+    setLibrary(sentimentAnalysisLibrary);
+    fetchTableData(searchQuery, sentimentAnalysisLibrary);
+  }, []);
+  
   //const { columns, rows } = authorsTableData;
   //const { columns: prCols, rows: prRows } = projectsTableData;
 
@@ -108,7 +136,13 @@ function Tables() {
 
   return (
     <DashboardLayout>
-      <DashboardNavbar />
+      <DashboardNavbar 
+        searchTerm={searchTerm} 
+        setSearchTerm={setSearchTerm} 
+        library={library}
+        setLibrary={setLibrary}
+        handleSearch={fetchTableData} 
+      />
       <VuiBox py={3}>
         <VuiBox mb={3}>
           <Card>
@@ -142,7 +176,7 @@ function Tables() {
                 },
               }}
             >
-              {list.length > 0 ? (<Table columns={columns} rows={list} /> ) : (<p>Loading...</p>) }
+              {list.length > 0 ? (<Table columns={columns} rows={list} />) : (<p>Loading...</p>) }
             </VuiBox>
           </Card>
         </VuiBox>

@@ -28,7 +28,7 @@ import PropTypes from "prop-types";
 import VuiBox from "components/VuiBox";
 
 // Vision UI Dashboard React context
-import { useVisionUIController, setLayout } from "context";
+import { useVisionUIController, setLayout } from "contexts/VisionUI";
 
 function PageLayout({ children }) {
   const [, dispatch] = useVisionUIController();

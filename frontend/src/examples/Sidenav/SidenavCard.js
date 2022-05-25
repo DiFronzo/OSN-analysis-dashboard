@@ -31,7 +31,7 @@ import VuiTypography from "components/VuiTypography";
 import { card, cardContent, cardIconBox, cardIcon } from "examples/Sidenav/styles/sidenavCard";
 
 // Vision UI Dashboard React context
-import { useVisionUIController } from "context";
+import { useVisionUIController } from "contexts/VisionUI";
 
 function SidenavCard({ color, ...rest }) {
   const [controller] = useVisionUIController();

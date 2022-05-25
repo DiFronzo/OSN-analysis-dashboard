@@ -33,10 +33,6 @@ import VuiBox from "components/VuiBox";
 import VuiTypography from "components/VuiTypography";
 import VuiButton from "components/VuiButton";
 
-// Vision UI Dashboard React example components
-import DefaultNavbarLink from "examples/Navbars/DefaultNavbar/DefaultNavbarLink";
-import DefaultNavbarMobile from "examples/Navbars/DefaultNavbar/DefaultNavbarMobile";
-
 // Vision UI Dashboard React base styles
 import breakpoints from "assets/theme/base/breakpoints";
 import colors from "assets/theme/base/colors";
@@ -45,36 +41,6 @@ import borders from "assets/theme/base/borders";
 function DefaultNavbar({ transparent, light, action }) {
   const { borderCol } = colors;
   const { borderWidth } = borders;
-  const [mobileNavbar, setMobileNavbar] = useState(false);
-  const [mobileView, setMobileView] = useState(false);
-
-  const openMobileNavbar = ({ currentTarget }) => setMobileNavbar(currentTarget.parentNode);
-  const closeMobileNavbar = () => setMobileNavbar(false);
-
-  useEffect(() => {
-    // A function that sets the display state for the DefaultNavbarMobile.
-    function displayMobileNavbar() {
-      if (window.innerWidth < breakpoints.values.lg) {
-        setMobileView(true);
-        setMobileNavbar(false);
-      } else {
-        setMobileView(false);
-        setMobileNavbar(false);
-      }
-    }
-
-    /** 
-     The event listener that's calling the displayMobileNavbar function when 
-     resizing the window.
-    */
-    window.addEventListener("resize", displayMobileNavbar);
-
-    // Call the displayMobileNavbar function to set the state with the initial value.
-    displayMobileNavbar();
-
-    // Remove event listener on cleanup
-    return () => window.removeEventListener("resize", displayMobileNavbar);
-  }, []);
 
   return (
     <Container>
@@ -119,9 +85,6 @@ function DefaultNavbar({ transparent, light, action }) {
             OSN Dashboard
           </VuiTypography>
         </VuiBox>
-        <VuiBox color="inherit" display={{ xs: "none", lg: "flex" }} m={0} p={0}>
-          <DefaultNavbarLink icon="donut_large" name="dashboard" route="/dashboard" />
-        </VuiBox>
         {action &&
           (action.type === "internal" ? (
             <VuiBox display={{ xs: "none", lg: "inline-block" }}>
@@ -151,26 +114,7 @@ function DefaultNavbar({ transparent, light, action }) {
               </VuiButton>
             </VuiBox>
           ))}
-        <VuiBox
-          display={{ xs: "inline-block", lg: "none" }}
-          lineHeight={0}
-          py={1.5}
-          pl={1.5}
-          color="inherit"
-          sx={{ cursor: "pointer" }}
-          onClick={openMobileNavbar}
-        >
-          <Icon
-            sx={({ palette: { white } }) => ({
-              color: white.main,
-            })}
-            fontSize="default"
-          >
-            {mobileNavbar ? "close" : "menu"}
-          </Icon>
-        </VuiBox>
       </VuiBox>
-      {mobileView && <DefaultNavbarMobile open={mobileNavbar} close={closeMobileNavbar} />}
     </Container>
   );
 }
