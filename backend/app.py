@@ -1,5 +1,6 @@
 import io
 import json
+import time
 
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
@@ -31,6 +32,66 @@ SITE_NAME = "https://pbs.twimg.com/"
 def proxy(path):
     tw_file = get(f"{SITE_NAME}{path}").content
     return send_file(io.BytesIO(tw_file), mimetype="image/jpeg")
+
+
+class TimelineValuesSchema(Schema):
+    name = fields.Str()
+    data = fields.List(fields.Number)
+
+
+class TimelineResponseSchema(Schema):
+    pos = fields.List(fields.Nested(TimelineValuesSchema))
+    neu = fields.List(fields.Nested(TimelineValuesSchema))
+    neg = fields.List(fields.Nested(TimelineValuesSchema))
+    dates = fields.List(fields.Date)
+
+
+# TODO: Change function to only return earliest and latest date, together with the tweets.
+@app.route("/line/<word_query>", methods=["GET"])
+def timeline(word_query):
+    """ """
+    args = request.args
+    number_of_tweets = args.get("number_of_tweets")
+
+    r = Preprocessing()
+    data = r.preprocessing_data(
+        word_query, int(number_of_tweets) if not (number_of_tweets is None) else 100
+    )
+    date_counts = {}
+    rows = json.loads(data.to_json(orient="records"))
+    for item in rows:
+        date = time.strftime("%Y-%m-%d", time.localtime(item["date"] / 1000))
+        if date not in date_counts:
+            date_counts[date] = {"pos": 0, "neu": 0, "neg": 0}
+        a = item["analysis"]
+        val = "neu"
+        if a == "Positive":
+            val = "pos"
+        elif a == "Negative":
+            val = "neg"
+        date_counts[date][val] += 1
+    dates = []
+    for k in date_counts:
+        print(k)
+        dates.append(k)
+    print(dates)
+    dates.sort()
+    pos = []
+    neu = []
+    neg = []
+    for date in dates:
+        current = date_counts[date]
+        pos.append(current["pos"])
+        neu.append(current["neu"])
+        neg.append(current["neg"])
+    return {
+        "data": [
+            {"name": "Positive", "data": pos},
+            {"name": "Neutral", "data": neu},
+            {"name": "Negative", "data": neg},
+        ],
+        "dates": dates,
+    }
 
 
 class MapResponseSchema(Schema):

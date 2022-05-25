@@ -78,24 +78,27 @@ function Dashboard() {
     advancedOptions 
   } = useSearchContext();
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [library, setLibrary] = useState('');
-
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Polarity data for pie chart
   const [polarity, setPolarity] = useState([]);
 
+  const [timelineData, setTimelineData] = useState([]);
+  const [timelineDates, setTimelineDates] = useState([]);
+
   // Fetch data for pie chart
   const fetchPieData = async (search, lib, advanced = null) => {
+    console.log("fetchPieData", search, lib);
     setIsLoading(true);
     if (!search || !lib) {
+      console.log("exit fetchPieData");
       setPolarity([]);
       setError(null);
       setIsLoading(false);
       return;
     }
+    console.log("continue fetchPieData");
     setSearchQuery(search);
     setSentimentAnalysisLibrary(lib);
     const queryParamString = queryString(advanced);
@@ -120,20 +123,70 @@ function Dashboard() {
     setIsLoading(false);
   }
 
+  const fetchLineData = async (search, lib, advanced = null) => {
+    console.log("fetchLineData", search, lib);
+    setIsLoading(true);
+    if (!search || !lib) {
+      console.log("exit fetchLineData");
+      setTimelineData([]);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+    console.log("Continue fetchLineData");
+    setSearchQuery(search);
+    setSentimentAnalysisLibrary(lib);
+    const queryParamString = queryString(advanced);
+    try {
+      // get the data from the api
+      let data;
+      if (!showAdvanced || !queryParamString) {
+        data = await fetch(`http://127.0.0.1:5000/line/${search}?number_of_tweets=1000&library=${lib}`);
+      } else {
+        data = await fetch(`http://127.0.0.1:5000/line/${search}${queryParamString}&number_of_tweets=1000&library=${lib}`);
+      }
+      
+      // convert the data to json
+      console.log("fetchLineData 1");
+      const json = await data.json();
+      console.log("fetchLineData 2");
+      const tData = json.data;
+      console.log("fetchLineData 3");
+      let tDates = json.dates;
+      console.log("fetchLineData 4");
+      setTimelineData(tData);
+      setTimelineDates(tDates);
+      console.log({
+        data: tData,
+        dates: tDates
+      })
+      setError(null);
+    } catch (err) {
+      setTimelineData([]);
+      setTimelineDates([]);
+      setError(err);
+    }
+    setIsLoading(false);
+  }
+
   useEffect(() => {
-    setSearchTerm(searchQuery);
-    setLibrary(sentimentAnalysisLibrary);
+    console.log("test");
     fetchPieData(searchQuery, sentimentAnalysisLibrary, showAdvanced ? advancedOptions : null);
+    fetchLineData(searchQuery, sentimentAnalysisLibrary, showAdvanced ? advancedOptions : null);
   }, []);
+
+  const handleSearch = async (search, lib) => {
+    console.log("handleSearch", searchQuery, sentimentAnalysisLibrary);
+    await Promise.all([
+      fetchPieData(search, lib, showAdvanced ? advancedOptions : null), 
+      fetchLineData(search, lib, showAdvanced ? advancedOptions : null)
+    ]);
+  }
 
   return (
     <DashboardLayout>
-      <DashboardNavbar 
-        searchTerm={searchTerm} 
-        setSearchTerm={setSearchTerm} 
-        library={library} 
-        setLibrary={setLibrary} 
-        handleSearch={fetchPieData} 
+      <DashboardNavbar
+        handleSearch={handleSearch} 
       />
       <VuiBox py={3}>
         <VuiBox mb={3}>
@@ -202,10 +255,10 @@ function Dashboard() {
                     </VuiTypography>
                   </VuiBox>
                   <VuiBox sx={{ height: "310px" }}>
-                    <p>Line chart</p>
                     <LineChart
-                      data={lineChartDataDashboard}
-                      options={lineChartOptionsDashboard}
+                      colors={["lightgreen", "lightgray", "red"]}
+                      data={timelineData}
+                      categories={timelineDates}
                     />
                   </VuiBox>
                 </VuiBox>
