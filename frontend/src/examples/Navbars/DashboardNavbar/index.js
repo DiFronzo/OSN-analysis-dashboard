@@ -35,6 +35,7 @@ import Icon from "@mui/material/Icon";
 import VuiBox from "components/VuiBox";
 import VuiTypography from "components/VuiTypography";
 import VuiInput from "components/VuiInput";
+import VuiButton from "components/VuiButton";
 
 // Vision UI Dashboard React example components
 import Breadcrumbs from "examples/Breadcrumbs";
@@ -55,18 +56,41 @@ import {
   setTransparentNavbar,
   setMiniSidenav,
   setOpenConfigurator,
-} from "context";
+} from "contexts/VisionUI";
 
 // Images
 import team2 from "assets/images/team-2.jpg";
 import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
 
-function DashboardNavbar({ absolute, light, isMini }) {
+// Sentiment analysis libraries
+import { libraries } from '../../../data/libraries';
+import { useSearchContext } from "contexts/Search";
+import Select from "components/Select";
+
+function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useVisionUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [library, setLibrary] = useState('');
+  // const [isSet, setIsSet] = useState(false);
+
+  const { searchQuery, sentimentAnalysisLibrary } = useSearchContext();
+
+  const handleSearchTermChange = (e) => setSearchTerm(e.target.value);
+  const handleLibraryChange = (e) => setLibrary(e.target.value);
+
+  const handleSubmit = async () => {
+    await handleSearch(searchTerm, library);
+  }
+
+  useEffect(() => {
+    setSearchTerm(searchQuery);
+    setLibrary(sentimentAnalysisLibrary);
+  }, [setSearchTerm, searchQuery, setLibrary, sentimentAnalysisLibrary]);
 
   useEffect(() => {
     // Setting the navbar type
@@ -150,9 +174,11 @@ function DashboardNavbar({ absolute, light, isMini }) {
         </VuiBox>
         {isMini ? null : (
           <VuiBox sx={(theme) => navbarRow(theme, { isMini })}>
-            <VuiBox pr={1}>
+            <VuiBox pr={1} display="flex">
               <VuiInput
                 placeholder="Type here..."
+                value={searchTerm}
+                onChange={handleSearchTermChange}
                 icon={{ component: "search", direction: "left" }}
                 sx={({ breakpoints }) => ({
                   [breakpoints.down("sm")]: {
@@ -164,6 +190,15 @@ function DashboardNavbar({ absolute, light, isMini }) {
                   backgroundColor: "info.main !important",
                 })}
               />
+              <Select
+                value={library}
+                onChange={handleLibraryChange}
+                options={libraries}
+                key="key"
+                valueKey="key"
+                textKey="name"
+              />
+              <VuiButton onClick={handleSubmit} color="primary">Search</VuiButton>
             </VuiBox>
             <VuiBox color={light ? "white" : "inherit"}>
               <Link to="/authentication/sign-in">

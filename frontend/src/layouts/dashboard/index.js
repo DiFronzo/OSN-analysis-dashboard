@@ -16,6 +16,8 @@
 
 */
 
+import { useEffect, useState } from "react";
+
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Icon from "@mui/material/Icon";
@@ -60,13 +62,79 @@ import { lineChartOptionsDashboard } from "layouts/dashboard/data/lineChartOptio
 import { barChartDataDashboard } from "layouts/dashboard/data/barChartData";
 import { barChartOptionsDashboard } from "layouts/dashboard/data/barChartOptions";
 
+// Search context hook
+import { useSearchContext } from "contexts/Search";
+import { queryString } from "utils/queryString";
+
 function Dashboard() {
   const { gradients } = colors;
   const { cardContent } = gradients;
+  const { 
+    searchQuery, 
+    setSearchQuery, 
+    sentimentAnalysisLibrary, 
+    setSentimentAnalysisLibrary,
+    showAdvanced,
+    advancedOptions 
+  } = useSearchContext();
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [library, setLibrary] = useState('');
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Polarity data for pie chart
+  const [polarity, setPolarity] = useState([]);
+
+  // Fetch data for pie chart
+  const fetchPieData = async (search, lib, advanced = null) => {
+    setIsLoading(true);
+    if (!search || !lib) {
+      setPolarity([]);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+    setSearchQuery(search);
+    setSentimentAnalysisLibrary(lib);
+    const queryParamString = queryString(advanced);
+    try {
+      // get the data from the api
+      let data;
+      if (!showAdvanced || !queryParamString) {
+        data = await fetch(`http://127.0.0.1:5000/pie/${search}?number_of_tweets=100&library=${lib}`);
+      } else {
+        data = await fetch(`http://127.0.0.1:5000/pie/${search}${queryParamString}&number_of_tweets=100&library=${lib}`);
+      }
+      
+      // convert the data to json
+      const json = await data.json();
+      let result = await json.polarity?.map(({ analysis }) => analysis);
+      setPolarity(result);
+      setError(null);
+    } catch (err) {
+      setPolarity([]);
+      setError(err);
+    }
+    setIsLoading(false);
+  }
+
+  useEffect(() => {
+    setSearchTerm(searchQuery);
+    setLibrary(sentimentAnalysisLibrary);
+    fetchPieData(searchQuery, sentimentAnalysisLibrary, showAdvanced ? advancedOptions : null);
+  }, []);
 
   return (
     <DashboardLayout>
-      <DashboardNavbar />
+      <DashboardNavbar 
+        searchTerm={searchTerm} 
+        setSearchTerm={setSearchTerm} 
+        library={library} 
+        setLibrary={setLibrary} 
+        handleSearch={fetchPieData} 
+      />
       <VuiBox py={3}>
         <VuiBox mb={3}>
           <Grid container spacing={3}>
@@ -110,7 +178,7 @@ function Dashboard() {
               <WelcomeMark />
             </Grid>
             <Grid item xs={12} lg={6} xl={3}>
-              <SatisfactionRate />
+              <SatisfactionRate polarity={polarity} />
             </Grid>
             <Grid item xs={12} lg={6} xl={4}>
               <ReferralTracking />

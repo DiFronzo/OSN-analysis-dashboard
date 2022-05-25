@@ -38,7 +38,7 @@ import {
 } from "examples/Sidenav/styles/sidenavCollapse";
 
 // Vision UI Dashboard React context
-import { useVisionUIController } from "context";
+import { useVisionUIController } from "contexts/VisionUI";
 
 function SidenavCollapse({ color, icon, name, children, active, noCollapse, open, ...rest }) {
   const [controller] = useVisionUIController();
