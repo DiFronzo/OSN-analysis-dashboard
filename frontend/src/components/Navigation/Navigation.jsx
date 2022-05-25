@@ -9,7 +9,7 @@ function Navigation() {
   const queryParamString = getQueryParamString(params);
 
   return (
-    <ButtonGroup>
+    <ButtonGroup sx={{ margin: '1em 0' }}>
       <Button LinkComponent={Link} to={`/dashboard${queryParamString}`}>
         Dashboard
       </Button>

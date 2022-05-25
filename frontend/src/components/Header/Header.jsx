@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
-import { MenuItem, Select, Typography } from '@mui/material';
+import { Button, Paper, Typography } from '@mui/material';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import { Link } from 'react-router-dom';
+import { useColorModeContext } from '../../contexts/ColorMode';
 
+/*
 const StyledHeader = styled.header(() => ({
   padding: '0 1em',
   boxShadow: '0 -0.2em 0.5em black',
@@ -11,20 +16,36 @@ const StyledHeader = styled.header(() => ({
   alignItems: 'center',
   justifyContent: 'space-between',
 }));
+*/
+
+const StyledPaper = styled(Paper)(() => ({
+  padding: '0 1em',
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+}));
 
 function Header({ title }) {
-  const [theme, setTheme] = useState('light');
-
-  const handleThemeChange = (e) => setTheme(e.target.value);
+  const { toggleColorMode, mode } = useColorModeContext();
 
   return (
-    <StyledHeader>
-      <Typography variant="h1">{title}</Typography>
-      <Select value={theme} onChange={handleThemeChange} variant="outlined">
-        <MenuItem value="light">Light theme</MenuItem>
-        <MenuItem value="dark">Dark theme</MenuItem>
-      </Select>
-    </StyledHeader>
+    <StyledPaper component="header" square>
+      <Typography
+        component={Link}
+        to="/"
+        color="textPrimary"
+        variant="h1"
+        sx={{ fontSize: '1.6em', margin: '0.5em 0', textDecoration: 'none' }}>
+        {title}
+      </Typography>
+      <Button
+        variant="text"
+        onClick={toggleColorMode}
+        endIcon={mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}>
+        {mode === 'light' ? 'Dark mode' : 'Light mode'}
+      </Button>
+    </StyledPaper>
   );
 }
 

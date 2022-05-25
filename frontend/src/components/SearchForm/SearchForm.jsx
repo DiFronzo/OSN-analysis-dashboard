@@ -20,7 +20,7 @@ const MAX_POSTS = 1000;
 const libraries = ['TextBlob', 'VADER'];
 
 const StyledForm = styled.form(() => ({
-  width: '60%',
+  width: '100%',
   minWidth: '20em',
   display: 'flex',
   flexDirection: 'row',
@@ -39,6 +39,7 @@ function SearchForm({
   setAdvancedOptions,
   setShowAdvanced,
   onSearch,
+  wrap,
 }) {
   const handleSearchTermChange = (e) => setSearchTerm(e.target.value);
   const handleLibraryChange = (e) => setLibrary(e.target.value);
@@ -58,47 +59,74 @@ function SearchForm({
 
   return (
     <StyledForm onSubmit={handleSearch}>
-      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
-        <TextField
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={handleSearchTermChange}
-          variant="outlined"
-          type="search"
-          sx={{ width: '100%' }}
-          required
-        />
-        <Select
-          value={library}
-          onChange={handleLibraryChange}
-          sx={{ width: '10em' }}>
-          {libraries &&
-            libraries.map((lib) => (
-              <MenuItem key={lib} value={lib}>
-                {lib}
-              </MenuItem>
-            ))}
-        </Select>
+      <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: wrap ? 'wrap' : 'nowrap',
+          justifyContent: 'center',
+        }}>
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+          }}>
+          <TextField
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={handleSearchTermChange}
+            variant="outlined"
+            type="search"
+            sx={{ width: '100%' }}
+            required
+          />
+          <Select
+            value={library}
+            onChange={handleLibraryChange}
+            sx={{ width: '10em' }}>
+            {libraries &&
+              libraries.map((lib) => (
+                <MenuItem key={lib} value={lib}>
+                  {lib}
+                </MenuItem>
+              ))}
+          </Select>
+        </Box>
+        <Button
+          startIcon={isLoading ? <CircularProgress /> : <SearchIcon />}
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={isLoading}
+          sx={{
+            width: '12em',
+            margin: `${wrap ? '0.5em 0.25em' : '0 0 0 0.5em'}`,
+          }}>
+          Search
+        </Button>
+        <Button
+          startIcon={<MenuIcon />}
+          onClick={handleShowAdvanced}
+          variant="contained"
+          color="secondary"
+          sx={{
+            width: '12em',
+            margin: `${wrap ? '0.5em 0.25em' : '0 0 0 0.5em'}`,
+          }}>
+          Advanced
+        </Button>
       </Box>
-      <Button
-        startIcon={isLoading ? <CircularProgress /> : <SearchIcon />}
-        type="submit"
-        variant="contained"
-        color="primary"
-        disabled={isLoading}
-        sx={{ width: '10em', margin: '0.5em 0.25em' }}>
-        Search
-      </Button>
-      <Button
-        startIcon={<MenuIcon />}
-        onClick={handleShowAdvanced}
-        variant="contained"
-        color="secondary"
-        sx={{ width: '10em', margin: '0.5em 0.25em' }}>
-        Advanced
-      </Button>
       {showAdvanced && (
-        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            marginTop: '1em',
+          }}>
           <Box
             sx={{
               width: '100%',
@@ -156,7 +184,6 @@ function SearchForm({
               width: '100%',
               display: 'flex',
               flexDirection: 'column',
-              marginBottom: '1em',
             }}>
             <FormLabel>To</FormLabel>
             <TextField
@@ -171,6 +198,10 @@ function SearchForm({
     </StyledForm>
   );
 }
+
+SearchForm.defaultProps = {
+  wrap: false,
+};
 
 SearchForm.propTypes = {
   searchTerm: PropTypes.string.isRequired,
@@ -188,6 +219,7 @@ SearchForm.propTypes = {
   setAdvancedOptions: PropTypes.func.isRequired,
   setShowAdvanced: PropTypes.func.isRequired,
   onSearch: PropTypes.func.isRequired,
+  wrap: PropTypes.bool,
 };
 
 export default SearchForm;

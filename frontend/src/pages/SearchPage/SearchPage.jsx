@@ -82,6 +82,7 @@ function SearchPage() {
         setAdvancedOptions={setAdvancedOptions}
         setShowAdvanced={setShowAdvanced}
         setIsLoading={setIsLoading}
+        wrap
       />
     </Box>
   );

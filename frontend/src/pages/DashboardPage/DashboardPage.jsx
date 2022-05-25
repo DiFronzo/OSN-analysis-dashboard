@@ -13,8 +13,10 @@ import useSearchFormData from '../../hooks/useSearchFormData';
 import Navigation from '../../components/Navigation/Navigation';
 import getQueryParamString from '../../utils/getQueryParamString';
 import useQueryParams from '../../hooks/useQueryParams';
+import { useColorModeContext } from '../../contexts/ColorMode';
 
 function DashboardPage() {
+  const { mode } = useColorModeContext();
   const { params } = useQueryParams();
 
   const {
@@ -151,6 +153,7 @@ function DashboardPage() {
           <PieChart
             labels={['Positive', 'Neutral', 'Negative']}
             colors={['#83de62', '#c7c7c7', '#f25b3d']}
+            legendColor={mode === 'light' ? '#000000' : '#ffffff'}
             data={pieChartData}
           />
         </DashboardCard>

@@ -21,6 +21,7 @@ function DataTable({
   pageSizeOptions,
   page,
   setPage,
+  mode,
 }) {
   const handlePageSizeChange = (size) => {
     setPageSize(size);
@@ -49,7 +50,12 @@ function DataTable({
           <TableBody>
             {data &&
               data.map((row, i) => (
-                <DataTableRow key={createKey(i)} valueKeys={keys} data={row} />
+                <DataTableRow
+                  key={createKey(i)}
+                  valueKeys={keys}
+                  data={row}
+                  mode={mode}
+                />
               ))}
           </TableBody>
         </Table>
@@ -91,6 +97,7 @@ DataTable.propTypes = {
   pageSizeOptions: PropTypes.arrayOf(PropTypes.number).isRequired,
   page: PropTypes.number.isRequired,
   setPage: PropTypes.func.isRequired,
+  mode: PropTypes.string.isRequired,
 };
 
 export default DataTable;

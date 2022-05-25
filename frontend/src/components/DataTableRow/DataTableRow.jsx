@@ -4,15 +4,18 @@ import { TableRow } from '@mui/material';
 import styled from '@emotion/styled';
 import DataTableCell from '../DataTableCell';
 
-const StyledTableRow = styled(TableRow)(() => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: '#f6f6f6',
-  },
-}));
+const StyledTableRow = styled(TableRow)(({ mode }) => {
+  console.log(mode);
+  return {
+    '&:nth-of-type(odd)': {
+      backgroundColor: mode === 'light' ? '#f6f6f6' : '#020202',
+    },
+  };
+});
 
-function DataTableRow({ data, valueKeys }) {
+function DataTableRow({ data, valueKeys, mode }) {
   return (
-    <StyledTableRow>
+    <StyledTableRow mode={mode}>
       {valueKeys &&
         valueKeys.map((key) => (
           <DataTableCell key={key}>{data[key]}</DataTableCell>
@@ -26,6 +29,7 @@ DataTableRow.propTypes = {
     PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   ).isRequired,
   valueKeys: PropTypes.arrayOf(PropTypes.string).isRequired,
+  mode: PropTypes.string.isRequired,
 };
 
 export default DataTableRow;

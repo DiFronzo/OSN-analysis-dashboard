@@ -1,13 +1,14 @@
 import React from 'react';
+import { CssBaseline } from '@mui/material';
 import Router from './routes/Router';
-
-import { SearchProvider } from './contexts/search';
+import { ColorModeProvider } from './contexts/ColorMode';
 
 function App() {
   return (
-    <SearchProvider>
+    <ColorModeProvider>
+      <CssBaseline />
       <Router />
-    </SearchProvider>
+    </ColorModeProvider>
   );
 }
 

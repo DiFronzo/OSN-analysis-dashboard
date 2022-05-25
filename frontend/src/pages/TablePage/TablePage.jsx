@@ -7,8 +7,10 @@ import Navigation from '../../components/Navigation/Navigation';
 import table from '../../services/table';
 import useQueryParams from '../../hooks/useQueryParams';
 import getQueryParamString from '../../utils/getQueryParamString';
+import { useColorModeContext } from '../../contexts/ColorMode';
 
 function TablePage() {
+  const { mode } = useColorModeContext();
   const { params } = useQueryParams();
   const {
     searchTerm,
@@ -160,6 +162,7 @@ function TablePage() {
         pageSizeOptions={[10, 25, 50]}
         pageSize={pageSize}
         setPageSize={setPageSize}
+        mode={mode}
       />
     </>
   );
