@@ -1,8 +1,12 @@
 import re
 
 import pandas as pd
+from pandas import DataFrame
 from textblob import TextBlob
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import itertools
+import collections
+
 
 
 def extract_mentions(text: str) -> list:
@@ -51,13 +55,22 @@ def graph_sentiment(data: pd.DataFrame) -> pd.DataFrame:
     return data["analysis"].value_counts().reset_index().sort_values(by="index", ascending=False)
 
 
-def graph_pos_words(data: pd.DataFrame) -> str:
-    return ' '.join([word for word in data['tweets'][data['analysis'] == "Positive"]])
+def graph_pos_words(data: pd.DataFrame) -> DataFrame:
+    words = [word.lower().split() for word in data['tweets'][data['analysis'] == "Positive"]]
+    all_words = list(itertools.chain(*words))
+    counts = collections.Counter(all_words)
+    return pd.DataFrame(counts.most_common(15), columns=['words', 'count'])
 
 
-def graph_neu_words(data: pd.DataFrame) -> str:
-    return ' '.join([word for word in data['tweets'][data['analysis'] == "Neutral"]])
+def graph_neu_words(data: pd.DataFrame) -> DataFrame:
+    words = [word.lower().split() for word in data['tweets'][data['analysis'] == "Neutral"]]
+    all_words = list(itertools.chain(*words))
+    counts = collections.Counter(all_words)
+    return pd.DataFrame(counts.most_common(15), columns=['words', 'count'])
 
 
-def graph_neg_words(data: pd.DataFrame) -> str:
-    return ' '.join([word for word in data['tweets'][data['analysis'] == "Negative"]])
+def graph_neg_words(data: pd.DataFrame) -> DataFrame:
+    words = [word.lower().split() for word in data['tweets'][data['analysis'] == "Negative"]]
+    all_words = list(itertools.chain(*words))
+    counts = collections.Counter(all_words)
+    return pd.DataFrame(counts.most_common(15), columns=['words', 'count'])

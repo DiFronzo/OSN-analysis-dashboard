@@ -1,6 +1,7 @@
 import io
 import json
 
+import pandas as pd
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
@@ -24,6 +25,62 @@ SITE_NAME = "https://pbs.twimg.com/"
 def proxy(path):
     tw_file = get(f'{SITE_NAME}{path}').content
     return send_file(io.BytesIO(tw_file), mimetype='image/jpeg')
+
+
+class WCResponseSchema(Schema):
+    words = fields.Str()
+    count = fields.Int()
+
+
+class WCListResponseSchema(Schema):
+    wc_data = fields.List(fields.Nested(WCResponseSchema))
+
+
+@app.route('/wordcloud/<word_query>', methods=['GET'])
+def wc_data(word_query):
+    """Get List of words and counts for Tweets found with a given polarity
+        ---
+        get:
+            description: Get List of words and counts for Tweets found with a given polarity
+            parameters:
+            - in: path
+              schema: RawDataParameter
+            - in: query
+              name: number_of_tweets
+              schema: RawDataQueryNumOfTweets
+            - in: query
+              name: function_option
+              schema:
+                type: enum
+                items:
+                  type: string
+                  enum:
+                    - positive
+                    - neutral
+                    - negative
+            responses:
+                200:
+                  content:
+                    application/json:
+                      schema: WCListResponseSchema
+        """
+    args = request.args
+    number_of_tweets = args.get('number_of_tweets')
+    function_option = args.get('function_option')
+
+    r = Preprocessing()
+    data = r.preprocessing_data(word_query, int(number_of_tweets) if not (number_of_tweets is None) else 100, "", "en")
+
+    word_cl: pd.DataFrame
+    if function_option.lower() == "neutral":
+        word_cl = utils.graph_neu_words(data)
+    elif function_option.lower() == "negative":
+        word_cl = utils.graph_neg_words(data)
+    else:
+        word_cl = utils.graph_pos_words(data)
+
+    rows = json.loads(word_cl.to_json(orient="records"))
+    return WCListResponseSchema().dump({"wc_data": rows})
 
 
 class MapResponseSchema(Schema):
@@ -198,6 +255,7 @@ with app.test_request_context():
     spec.path(view=raw_data)
     spec.path(view=polarity)
     spec.path(view=map_data)
+    spec.path(view=wc_data)
 
 
 @app.route("/docs")
