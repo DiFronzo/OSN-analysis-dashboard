@@ -55,7 +55,7 @@ import { IoDocumentText } from "react-icons/io5";
 import { FaShoppingCart } from "react-icons/fa";
 
 // Data
-import LineChart from "examples/Charts/LineCharts/LineChart";
+import LineChart from "components/charts/LineChart" // "examples/Charts/LineCharts/LineChart";
 import BarChart from "examples/Charts/BarCharts/BarChart";
 import { lineChartDataDashboard } from "layouts/dashboard/data/lineChartData";
 import { lineChartOptionsDashboard } from "layouts/dashboard/data/lineChartOptions";
@@ -202,9 +202,10 @@ function Dashboard() {
                     </VuiTypography>
                   </VuiBox>
                   <VuiBox sx={{ height: "310px" }}>
+                    <p>Line chart</p>
                     <LineChart
-                      lineChartData={lineChartDataDashboard}
-                      lineChartOptions={lineChartOptionsDashboard}
+                      data={lineChartDataDashboard}
+                      options={lineChartOptionsDashboard}
                     />
                   </VuiBox>
                 </VuiBox>
@@ -225,6 +226,7 @@ function Dashboard() {
                       borderRadius: "20px",
                     }}
                   >
+                    <p>Bar chart</p>
                     <BarChart
                       barChartData={barChartDataDashboard}
                       barChartOptions={barChartOptionsDashboard}
