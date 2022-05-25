@@ -27,7 +27,7 @@ const WelcomeMark = () => {
         </VuiBox>
         <VuiTypography
           component="a"
-          href="/search"
+          href="/"
           variant="button"
           color="white"
           fontWeight="regular"
