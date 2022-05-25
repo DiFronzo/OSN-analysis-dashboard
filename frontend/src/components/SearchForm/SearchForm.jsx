@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import {
   Box,
   Button,
+  CircularProgress,
   FormLabel,
   MenuItem,
   Select,
@@ -26,17 +28,18 @@ const StyledForm = styled.form(() => ({
   justifyContent: 'center',
 }));
 
-function SearchForm({ onSubmit }) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [library, setLibrary] = useState(libraries[0]);
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [advancedData, setAdvancedData] = useState({
-    amount: MIN_POSTS,
-    region: '',
-    from: '',
-    to: '',
-  });
-
+function SearchForm({
+  searchTerm,
+  library,
+  advancedOptions,
+  showAdvanced,
+  isLoading,
+  setSearchTerm,
+  setLibrary,
+  setAdvancedOptions,
+  setShowAdvanced,
+  onSearch,
+}) {
   const handleSearchTermChange = (e) => setSearchTerm(e.target.value);
   const handleLibraryChange = (e) => setLibrary(e.target.value);
   const handleShowAdvanced = () => setShowAdvanced(!showAdvanced);
@@ -45,11 +48,12 @@ function SearchForm({ onSubmit }) {
     if (e.target.name === 'amount') {
       value = parseInt(value, 10) || 0;
     }
-    setAdvancedData({ ...advancedData, [e.target.name]: value });
+    setAdvancedOptions({ ...advancedOptions, [e.target.name]: value });
   };
 
   const handleSearch = async (e) => {
     e.preventDefault();
+    await onSearch();
   };
 
   return (
@@ -70,17 +74,18 @@ function SearchForm({ onSubmit }) {
           sx={{ width: '10em' }}>
           {libraries &&
             libraries.map((lib) => (
-              <MenuItem key={lib} value={lib.toLowerCase()}>
+              <MenuItem key={lib} value={lib}>
                 {lib}
               </MenuItem>
             ))}
         </Select>
       </Box>
       <Button
-        startIcon={<SearchIcon />}
+        startIcon={isLoading ? <CircularProgress /> : <SearchIcon />}
         type="submit"
         variant="contained"
         color="primary"
+        disabled={isLoading}
         sx={{ width: '10em', margin: '0.5em 0.25em' }}>
         Search
       </Button>
@@ -106,14 +111,14 @@ function SearchForm({ onSubmit }) {
               name="amount"
               min={MIN_POSTS}
               max={MAX_POSTS}
-              value={advancedData.amount}
+              value={advancedOptions.amount}
               onChange={handleAdvancedOptionChange}
             />
             <TextField
               name="amount"
               type="number"
               variant="outlined"
-              value={advancedData.amount}
+              value={advancedOptions.amount}
               onChange={handleAdvancedOptionChange}
             />
           </Box>
@@ -127,7 +132,7 @@ function SearchForm({ onSubmit }) {
             <FormLabel>Region</FormLabel>
             <Select
               name="region"
-              value={advancedData.region}
+              value={advancedOptions.region}
               onChange={handleAdvancedOptionChange}
             />
           </Box>
@@ -142,7 +147,7 @@ function SearchForm({ onSubmit }) {
             <TextField
               name="from"
               type="date"
-              value={advancedData.from}
+              value={advancedOptions.from}
               onChange={handleAdvancedOptionChange}
             />
           </Box>
@@ -157,7 +162,7 @@ function SearchForm({ onSubmit }) {
             <TextField
               name="to"
               type="date"
-              value={advancedData.to}
+              value={advancedOptions.to}
               onChange={handleAdvancedOptionChange}
             />
           </Box>
@@ -166,5 +171,23 @@ function SearchForm({ onSubmit }) {
     </StyledForm>
   );
 }
+
+SearchForm.propTypes = {
+  searchTerm: PropTypes.string.isRequired,
+  library: PropTypes.string.isRequired,
+  advancedOptions: PropTypes.shape({
+    amount: PropTypes.number.isRequired,
+    region: PropTypes.string.isRequired,
+    from: PropTypes.string.isRequired,
+    to: PropTypes.string.isRequired,
+  }).isRequired,
+  showAdvanced: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  setSearchTerm: PropTypes.func.isRequired,
+  setLibrary: PropTypes.func.isRequired,
+  setAdvancedOptions: PropTypes.func.isRequired,
+  setShowAdvanced: PropTypes.func.isRequired,
+  onSearch: PropTypes.func.isRequired,
+};
 
 export default SearchForm;
