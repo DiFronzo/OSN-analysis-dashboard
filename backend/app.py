@@ -1,5 +1,6 @@
 import io
 import json
+import math
 import time
 
 from apispec import APISpec
@@ -96,9 +97,9 @@ def timeline(word_query):
     n = int(number_of_points) if (not number_of_points is None) else 10
     n = n if (n > 0) else 10
 
-    interval = utils.get_interval(earliest, newest, n)
-    interval_counts = utils.get_interval_counts(earliest, interval, n)
-    results = utils.get_line_chart_data(rows, interval, interval_counts)
+    timespan = newest - earliest
+    interval = math.ceil(timespan / n) + 1
+    results = utils.get_line_chart_data(rows, interval, earliest, n)
 
     return TimelineResponseSchema().dump({"data": results})
 

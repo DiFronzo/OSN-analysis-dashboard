@@ -70,39 +70,42 @@ def graph_neg_words(data: pd.DataFrame) -> str:
     return " ".join([word for word in data["tweets"][data["analysis"] == "Negative"]])
 
 
-def get_interval(earliest: int, newest: int, number_of_points: int) -> int:
-    timespan = newest - earliest
-    return math.ceil(timespan / number_of_points) + 1
-
-
-def get_interval_counts(earliest: int, interval: int, number_of_points: int) -> dict:
-    interval_counts = {}
+def get_line_chart_data(
+    data: list, interval: int, earliest: int, number_of_points: int
+) -> list:
+    time_point_counts = {}
     current_point = earliest
     for _ in range(number_of_points):
-        interval_counts[current_point] = 0
+        time_point_counts[current_point] = [0, 0, 0]
         current_point += interval
-    return interval_counts
 
-
-def get_line_chart_data(data: list, interval: int, interval_counts: dict):
-    line_chart_data = []
-    aggregated_data = {}
     for item in data:
-        d = item["date"]
         a = item["analysis"]
-        for k in interval_counts.keys():
-            if d >= k + interval:
+        d = item["date"]
+
+        i = 0
+        if a == "Neutral":
+            i = 1
+        elif a == "Negative":
+            i = 2
+
+        for tp in time_point_counts:
+            if d >= tp + interval:
                 continue
-            if a not in aggregated_data:
-                aggregated_data[a] = dict(interval_counts)
-            aggregated_data[a][k] += 1
+            time_point_counts[tp][i] += 1
             break
 
-    for a, c in aggregated_data.items():
-        line = {}
-        line["name"] = a
-        line["data"] = []
-        for k, v in c.items():
-            line["data"].append([k, v])
-        line_chart_data.append(line)
-    return line_chart_data
+    pos = []
+    neu = []
+    neg = []
+
+    for k, a in time_point_counts.items():
+        pos.append([k, a[0]])
+        neu.append([k, a[1]])
+        neg.append([k, a[2]])
+
+    return [
+        {"name": "Positive", "data": pos},
+        {"name": "Neutral", "data": neu},
+        {"name": "Negative", "data": neg},
+    ]
