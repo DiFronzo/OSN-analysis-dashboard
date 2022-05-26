@@ -16,7 +16,7 @@
 
 */
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -56,10 +56,8 @@ import { IoDocumentText } from "react-icons/io5";
 import { FaShoppingCart } from "react-icons/fa";
 
 // Data
-import LineChart from "examples/Charts/LineCharts/LineChart";
+import LineChart from "components/charts/LineChart" // "examples/Charts/LineCharts/LineChart";
 import BarChart from "examples/Charts/BarCharts/BarChart";
-import { lineChartDataDashboard } from "layouts/dashboard/data/lineChartData";
-import { lineChartOptionsDashboard } from "layouts/dashboard/data/lineChartOptions";
 import { barChartDataDashboard } from "layouts/dashboard/data/barChartData";
 import { barChartOptionsDashboard } from "layouts/dashboard/data/barChartOptions";
 
@@ -68,8 +66,37 @@ import { useSearchContext } from "contexts/Search";
 import { queryString } from "utils/queryString";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import WordCloud from "react-d3-cloud";
 
 function Dashboard() {
+
+  const [menu, setMenu] = useState(null);
+
+  const openMenu = ({ currentTarget }) => setMenu(currentTarget);
+  const closeMenu = () => setMenu(null);
+
+  const renderMenu = (
+    <Menu
+      id="simple-menu"
+      anchorEl={menu}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "left",
+      }}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={Boolean(menu)}
+      onClose={closeMenu}
+    >
+      <MenuItem onClick={closeMenu}>Positive</MenuItem>
+      <MenuItem onClick={closeMenu}>Neutral</MenuItem>
+      <MenuItem onClick={closeMenu}>Negative</MenuItem>
+
+    </Menu>
+  );
+
   const { gradients } = colors;
   const { cardContent } = gradients;
   const { 
@@ -81,15 +108,13 @@ function Dashboard() {
     advancedOptions 
   } = useSearchContext();
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [library, setLibrary] = useState('');
-
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Polarity data for pie chart
   const [polarity, setPolarity] = useState([]);
-
+  
+  const [timelineData, setTimelineData] = useState([]);
   // Data for map
   const [map, setMap] = useState([]);
 
@@ -98,13 +123,16 @@ function Dashboard() {
 
   // Fetch data for pie chart
   const fetchPieData = async (search, lib, advanced = null) => {
+    console.log("fetchPieData", search, lib);
     setIsLoading(true);
     if (!search || !lib) {
+      console.log("exit fetchPieData");
       setPolarity([]);
       setError(null);
       setIsLoading(false);
       return;
     }
+    console.log("continue fetchPieData");
     setSearchQuery(search);
     setSentimentAnalysisLibrary(lib);
     const queryParamString = queryString(advanced);
@@ -155,20 +183,55 @@ function Dashboard() {
     setIsLoading(false);
   }
 
+  const fetchLineData = async (search, lib, advanced = null) => {
+    setIsLoading(true);
+    if (!search || !lib) {
+      setTimelineData([]);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+    setSearchQuery(search);
+    setSentimentAnalysisLibrary(lib);
+    const queryParamString = queryString(advanced);
+    try {
+      // get the data from the api
+      let data;
+      if (!showAdvanced || !queryParamString) {
+        data = await fetch(`http://127.0.0.1:5000/line/${search}?number_of_tweets=1000&library=${lib}`);
+      } else {
+        data = await fetch(`http://127.0.0.1:5000/line/${search}${queryParamString}&number_of_tweets=1000&library=${lib}`);
+      }
+      
+      // convert the data to json
+      const json = await data.json();
+      const tData = json.data;
+      setTimelineData(tData);
+      setError(null);
+    } catch (err) {
+      setTimelineData([]);
+      setError(err);
+    }
+    setIsLoading(false);
+  }
+
   useEffect(() => {
-    setSearchTerm(searchQuery);
-    setLibrary(sentimentAnalysisLibrary);
+    console.log("test");
     fetchPieData(searchQuery, sentimentAnalysisLibrary, showAdvanced ? advancedOptions : null);
+    fetchLineData(searchQuery, sentimentAnalysisLibrary, showAdvanced ? advancedOptions : null);
   }, []);
+
+  const handleSearch = async (search, lib) => {
+    await Promise.all([
+      fetchPieData(search, lib, showAdvanced ? advancedOptions : null), 
+      fetchLineData(search, lib, showAdvanced ? advancedOptions : null)
+    ]);
+  }
 
   return (
     <DashboardLayout>
-      <DashboardNavbar 
-        searchTerm={searchTerm} 
-        setSearchTerm={setSearchTerm} 
-        library={library} 
-        setLibrary={setLibrary} 
-        handleSearch={fetchPieData} 
+      <DashboardNavbar
+        handleSearch={handleSearch} 
       />
       <VuiBox py={3}>
         <VuiBox mb={3}>
@@ -180,7 +243,46 @@ function Dashboard() {
               <SatisfactionRate polarity={polarity} />
             </Grid>
             <Grid item xs={12} lg={6} xl={4}>
-              {wordcloud.length > 0 ? (<ReferralTracking words2={wordcloud} />) : (<p>Loading...</p>)}
+              <Card
+                sx={{
+                  height: "100%",
+                  background: linearGradient(
+                    gradients.cardDark.main,
+                    gradients.cardDark.state,
+                    gradients.cardDark.deg
+                  ),
+                }}
+              >
+                <VuiBox sx={{ width: "100%" }}>
+                  <VuiBox
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-beetween"
+                    sx={{ width: "100%" }}
+                    mb="40px"
+                  >
+                    <VuiTypography variant="lg" color="white" mr="auto" fontWeight="bold">
+                      Word Cloud {renderMenu}
+                    </VuiTypography>
+                    <VuiTypography variant="lg" color="white">
+                      (Positive)
+                    </VuiTypography>
+                    <VuiBox display="flex" color="text" px={2}>
+                      <Icon sx={{ cursor: "pointer", fontWeight: "bold" }} fontSize="small" onClick={openMenu}>
+                        more_vert
+                      </Icon>
+                    </VuiBox>
+                  </VuiBox>
+                  <VuiBox
+                    flexDirection="column"
+                    display="flex"
+                    sx={{ height: "200px" }}
+                  >
+                    {wordcloud.length > 0 ? (<ReferralTracking words2={wordcloud} />) : (<p>Loading...</p>)}
+                  </VuiBox>
+                </VuiBox>
+              </Card>
+
             </Grid>
           </Grid>
         </VuiBox>
@@ -190,20 +292,12 @@ function Dashboard() {
               <Card>
                 <VuiBox sx={{ height: "100%" }}>
                   <VuiTypography variant="lg" color="white" fontWeight="bold" mb="5px">
-                    Sales Overview
+                    Sentiment over time
                   </VuiTypography>
-                  <VuiBox display="flex" alignItems="center" mb="40px">
-                    <VuiTypography variant="button" color="success" fontWeight="bold">
-                      +5% more{" "}
-                      <VuiTypography variant="button" color="text" fontWeight="regular">
-                        in 2021
-                      </VuiTypography>
-                    </VuiTypography>
-                  </VuiBox>
                   <VuiBox sx={{ height: "310px" }}>
                     <LineChart
-                      lineChartData={lineChartDataDashboard}
-                      lineChartOptions={lineChartOptionsDashboard}
+                      colors={["lightgreen", "lightgray", "red"]}
+                      data={timelineData}
                     />
                   </VuiBox>
                 </VuiBox>
