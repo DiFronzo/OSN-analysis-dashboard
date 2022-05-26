@@ -6,8 +6,9 @@ import colors from "assets/theme/base/colors";
 import { FaEllipsisH } from "react-icons/fa";
 import linearGradient from "assets/theme/functions/linearGradient";
 import * as GradientProgress from "@delowar/react-circle-progressbar";
-import WordCloud from 'react-d3-cloud';
 import ReactWordcloud from "react-wordcloud";
+import WordCloud from "react-d3-cloud";
+
 
 
 const words = [
@@ -513,9 +514,14 @@ const words = [
   },
 ];
 
+const fontSizeMapper = (word) => Math.log2(word.value) * 10;
+
 function ReferralTracking() {
   const { info, gradients } = colors;
   const { cardContent } = gradients;
+
+  const defaultSize = 240;
+  const defaultGap = 120;
 
   return (
     <Card
@@ -545,7 +551,8 @@ function ReferralTracking() {
           display="flex"
           sx={{ height: "200px" }}
         >
-          <ReactWordcloud words={words} />
+          <WordCloud data={words} fontSizeMapper={fontSizeMapper} width={defaultSize}
+                     height={defaultGap}/>,
 
         </VuiBox>
       </VuiBox>

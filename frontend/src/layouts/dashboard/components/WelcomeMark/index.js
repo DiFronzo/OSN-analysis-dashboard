@@ -22,12 +22,12 @@ const WelcomeMark = () => {
           </VuiTypography>
           <VuiTypography color="text" variant="h6" fontWeight="regular" mb="auto">
             Glad to see you again!
-            <br /> Run a new search?
+            <br /> Run an Advanced Search?
           </VuiTypography>
         </VuiBox>
         <VuiTypography
           component="a"
-          href="/search"
+          href="/"
           variant="button"
           color="white"
           fontWeight="regular"
