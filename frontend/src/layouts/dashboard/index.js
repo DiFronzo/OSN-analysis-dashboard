@@ -57,8 +57,6 @@ import { FaShoppingCart } from "react-icons/fa";
 // Data
 import LineChart from "components/charts/LineChart" // "examples/Charts/LineCharts/LineChart";
 import BarChart from "examples/Charts/BarCharts/BarChart";
-import { lineChartDataDashboard } from "layouts/dashboard/data/lineChartData";
-import { lineChartOptionsDashboard } from "layouts/dashboard/data/lineChartOptions";
 import { barChartDataDashboard } from "layouts/dashboard/data/barChartData";
 import { barChartOptionsDashboard } from "layouts/dashboard/data/barChartOptions";
 
@@ -85,7 +83,6 @@ function Dashboard() {
   const [polarity, setPolarity] = useState([]);
 
   const [timelineData, setTimelineData] = useState([]);
-  const [timelineDates, setTimelineDates] = useState([]);
 
   // Fetch data for pie chart
   const fetchPieData = async (search, lib, advanced = null) => {
@@ -152,18 +149,10 @@ function Dashboard() {
       console.log("fetchLineData 2");
       const tData = json.data;
       console.log("fetchLineData 3");
-      let tDates = json.dates;
-      console.log("fetchLineData 4");
       setTimelineData(tData);
-      setTimelineDates(tDates);
-      console.log({
-        data: tData,
-        dates: tDates
-      })
       setError(null);
     } catch (err) {
       setTimelineData([]);
-      setTimelineDates([]);
       setError(err);
     }
     setIsLoading(false);
@@ -258,7 +247,6 @@ function Dashboard() {
                     <LineChart
                       colors={["lightgreen", "lightgray", "red"]}
                       data={timelineData}
-                      categories={timelineDates}
                     />
                   </VuiBox>
                 </VuiBox>

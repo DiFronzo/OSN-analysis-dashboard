@@ -34,64 +34,68 @@ def proxy(path):
     return send_file(io.BytesIO(tw_file), mimetype="image/jpeg")
 
 
-class TimelineValuesSchema(Schema):
+class TimelineDataSchema(Schema):
     name = fields.Str()
-    data = fields.List(fields.Number)
+    data = fields.List(fields.List(fields.Int()))
 
 
 class TimelineResponseSchema(Schema):
-    pos = fields.List(fields.Nested(TimelineValuesSchema))
-    neu = fields.List(fields.Nested(TimelineValuesSchema))
-    neg = fields.List(fields.Nested(TimelineValuesSchema))
-    dates = fields.List(fields.Date)
+    data = fields.List(fields.Nested(TimelineDataSchema))
 
 
-# TODO: Change function to only return earliest and latest date, together with the tweets.
+class TimelineDataQueryNumOfPoints(Schema):
+    number_of_points = fields.Int()
+
+
 @app.route("/line/<word_query>", methods=["GET"])
 def timeline(word_query):
-    """ """
+    """Get list of aggregated sentiment data at different points in a timespan
+    ---
+    get:
+        description: Get list of aggregated sentiment data at different points in a timespan
+        parameters:
+        - in: path
+            schema: RawDataParameter
+        - in: query
+            name: number_of_tweets
+            schema: RawDataQueryNumOfTweets
+        - in: query
+            name: number_of_points
+            schema: TimelineDataQueryNumOfPoints
+        responses:
+            200:
+                content:
+                application/json:
+                schema: TimelineResponseSchema
+    """
     args = request.args
     number_of_tweets = args.get("number_of_tweets")
+    number_of_points = args.get("number_of_points")
 
     r = Preprocessing()
     data = r.preprocessing_data(
         word_query, int(number_of_tweets) if not (number_of_tweets is None) else 100
     )
-    date_counts = {}
     rows = json.loads(data.to_json(orient="records"))
+    earliest = round((time.time() * 1000) + 1)
+    newest = 0
+
+    # Find the earliest and newest dates from the data
     for item in rows:
-        date = time.strftime("%Y-%m-%d", time.localtime(item["date"] / 1000))
-        if date not in date_counts:
-            date_counts[date] = {"pos": 0, "neu": 0, "neg": 0}
-        a = item["analysis"]
-        val = "neu"
-        if a == "Positive":
-            val = "pos"
-        elif a == "Negative":
-            val = "neg"
-        date_counts[date][val] += 1
-    dates = []
-    for k in date_counts:
-        print(k)
-        dates.append(k)
-    print(dates)
-    dates.sort()
-    pos = []
-    neu = []
-    neg = []
-    for date in dates:
-        current = date_counts[date]
-        pos.append(current["pos"])
-        neu.append(current["neu"])
-        neg.append(current["neg"])
-    return {
-        "data": [
-            {"name": "Positive", "data": pos},
-            {"name": "Neutral", "data": neu},
-            {"name": "Negative", "data": neg},
-        ],
-        "dates": dates,
-    }
+        d = item["date"]
+        if d < earliest:
+            earliest = d
+        if d > newest:
+            newest = d
+
+    n = int(number_of_points) if (not number_of_points is None) else 10
+    n = n if (n > 0) else 10
+
+    interval = utils.get_interval(earliest, newest, n)
+    interval_counts = utils.get_interval_counts(earliest, interval, n)
+    results = utils.get_line_chart_data(rows, interval, interval_counts)
+
+    return TimelineResponseSchema().dump({"data": results})
 
 
 class MapResponseSchema(Schema):

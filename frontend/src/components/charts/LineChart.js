@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 
-function LineChart({ data, categories, colors }) {
+function LineChart({ data, colors }) {
 	// const [lineChartData, setLineChartData] = useState([]);
 	// const [lineChartOptions, setLineChartOptions] = useState({});
 
@@ -31,7 +31,6 @@ function LineChart({ data, categories, colors }) {
 				},
 				xaxis: {
 					type: "datetime",
-					categories: categories,
 					labels: {
 						style: {
 							colors: "#c8cfca",
