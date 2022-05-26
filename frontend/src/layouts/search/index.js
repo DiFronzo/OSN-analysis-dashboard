@@ -33,18 +33,15 @@ function Search() {
 	}
 
 	const handleQueryChange = (e) => setSearchQuery(e.target.value);
-
 	const handleSentimentAnalysisLibraryChange = (e) => setSentimentAnalysisLibrary(e.target.value);
-
 	const handleShowAdvancedOptions = () => setShowAdvanced(!showAdvanced);
-
-	const handleAdvancedOptionsChange = (e) => {
-		if (e.target.name == "amount") {
-			setAdvancedOptions({ ...advancedOptions, "amount": parseInt(e.target.value, 10) })
-			return;
-		}
-		setAdvancedOptions({ ...advancedOptions, [e.target.name]: e.target.value });
-	}
+	
+	const handleNumberOfPostsChange = (e) => 
+			setAdvancedOptions({ ...advancedOptions, numberOfPosts: e.target.value });
+	const handleUsernameChange = (e) => 
+			setAdvancedOptions({ ...advancedOptions, username: e.target.value });
+	const handleUntilDateChange = (e) => 
+			setAdvancedOptions({ ...advancedOptions, untilDate: e.target.value });
 
 	return (
 		<PageLayout>
@@ -76,41 +73,33 @@ function Search() {
 					<VuiButton onClick={handleShowAdvancedOptions} color="dark" sx={{ m: '0.5em' }}>Advanced</VuiButton>
 					{showAdvanced && (
 					<VuiBox display="flex" flexDirection="column" width="100%" sx={{ marginTop: "1em" }}>
-						<FormLabel>Amount of posts</FormLabel>
+						<FormLabel>Number of posts</FormLabel>
 						<Slider 
-							name="amount"
+							name="number_of_posts"
 							min={100}
 							max={1000}
-							value={advancedOptions.amount} 
-							onChange={handleAdvancedOptionsChange} 
+							value={advancedOptions.numberOfPosts} 
+							onChange={handleNumberOfPostsChange} 
 						/>
 						<VuiInput 
-							name="amount" 
+							name="number_of_posts" 
 							type="number" 
-							value={advancedOptions.amount}
-							onChange={handleAdvancedOptionsChange}
+							value={advancedOptions.numberOfPosts}
+							onChange={handleNumberOfPostsChange}
 						/>
-						<FormLabel>Region</FormLabel>
-						<select
-							name="region" 
-							value={advancedOptions.region} 
-							onChange={handleAdvancedOptionsChange}
-						>
-							{/* Countires */}
-						</select>
-						<FormLabel>From</FormLabel>
+						<FormLabel>User</FormLabel>
 						<VuiInput
-							name="from"
-							type="date"
-							value={advancedOptions.from}
-							onChange={handleAdvancedOptionsChange}
+							name="username"
+							type="text"
+							value={advancedOptions.username}
+							onChange={handleUsernameChange}
 						/>
-						<FormLabel>To</FormLabel>
+						<FormLabel>Until date</FormLabel>
 						<VuiInput
-							name="to"
+							name="until"
 							type="date"
-							value={advancedOptions.to}
-							onChange={handleAdvancedOptionsChange}
+							value={advancedOptions.untilDate}
+							onChange={handleUntilDateChange}
 						/>
 					</VuiBox>
 				)}

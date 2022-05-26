@@ -13,10 +13,9 @@ function SearchProvider({ children }) {
 	const [sentimentAnalysisLibrary, setSentimentAnalysisLibrary] = useState(libraries[0].key);
 	const [showAdvanced, setShowAdvanced] = useState(false);
 	const [advancedOptions, setAdvancedOptions] = useState({
-		amount: 100,
-		region: '',
-		from: '',
-		to: ''
+		numberOfPosts: 100,
+		user: '',
+		untilDate: '',
 	});
 
 	return (
