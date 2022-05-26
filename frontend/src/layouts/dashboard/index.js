@@ -181,7 +181,6 @@ function Dashboard() {
   }, []);
 
   const handleSearch = async (search, lib) => {
-    console.log("handleSearch", searchQuery, sentimentAnalysisLibrary);
     await Promise.all([
       fetchPieData(search, lib, showAdvanced ? advancedOptions : null), 
       fetchLineData(search, lib, showAdvanced ? advancedOptions : null)
@@ -213,16 +212,8 @@ function Dashboard() {
               <Card>
                 <VuiBox sx={{ height: "100%" }}>
                   <VuiTypography variant="lg" color="white" fontWeight="bold" mb="5px">
-                    Sales Overview
+                    Sentiment over time
                   </VuiTypography>
-                  <VuiBox display="flex" alignItems="center" mb="40px">
-                    <VuiTypography variant="button" color="success" fontWeight="bold">
-                      +5% more{" "}
-                      <VuiTypography variant="button" color="text" fontWeight="regular">
-                        in 2021
-                      </VuiTypography>
-                    </VuiTypography>
-                  </VuiBox>
                   <VuiBox sx={{ height: "310px" }}>
                     <LineChart
                       colors={["lightgreen", "lightgray", "red"]}
