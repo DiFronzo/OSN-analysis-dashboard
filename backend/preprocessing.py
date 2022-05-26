@@ -114,7 +114,7 @@ class Preprocessing:
         function_option="",
         lang_opt="en",
         date_until="",
-        vader=False,
+        library="textblob",
     ) -> pd.DataFrame:
         """Finds real-time tweets and finds polarity
 
@@ -128,7 +128,7 @@ class Preprocessing:
             A text for deciding API call to use.
         lang_opt : string
             Restricts tweets to the given language, given by an ISO 639-1 code. Language detection is best-effort.
-        vader : bool
+        library : string
             Option to use Vader or TextBlob. TextBlob is default.
 
         Returns
@@ -210,12 +210,12 @@ class Preprocessing:
 
         data["subjectivity"] = data["tweets"].apply(get_subjectivity)
 
-        if vader:
-            data["polarity"] = data["tweets"].apply(get_polarity_vader)
-            data["analysis"] = data["polarity"].apply(get_analysis_vader)
-        else:
+        if library.lower() == "textblob":
             data["polarity"] = data["tweets"].apply(get_polarity)
             data["analysis"] = data["polarity"].apply(get_analysis)
+        elif library.lower() == "vader":
+            data["polarity"] = data["tweets"].apply(get_polarity_vader)
+            data["analysis"] = data["polarity"].apply(get_analysis_vader)
 
         # word counter for top 15
         # TODO! remove the word_query word sent by the user

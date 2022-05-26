@@ -73,6 +73,13 @@ def timeline(word_query):
         - in: path
             schema: RawDataParameter
         - in: query
+          name: library
+          schema:
+            type: string
+            enum:
+              - textblob
+              - vader
+        - in: query
             name: number_of_tweets
             schema: RawDataQueryNumOfTweets
         - in: query
@@ -96,6 +103,7 @@ def timeline(word_query):
                 schema: TimelineResponseSchema
     """
     args = request.args
+    library = args.get("library")
     number_of_tweets = args.get("number_of_tweets")
     number_of_points = args.get("number_of_points")
     function_option = args.get("function_option")
@@ -108,6 +116,7 @@ def timeline(word_query):
         function_option if not (function_option is None) else "",
         "en",
         date_until if not (date_until is None) else "",
+        library if not (library is None) else "",
     )
     rows = json.loads(data.to_json(orient="records"))
     earliest = round((time.time() * 1000) + 1)
@@ -155,6 +164,13 @@ def map_data(word_query):
         - in: path
           schema: RawDataParameter
         - in: query
+          name: library
+          schema:
+            type: string
+            enum:
+              - textblob
+              - vader
+        - in: query
           name: number_of_tweets
           schema: RawDataQueryNumOfTweets
         - in: query
@@ -175,6 +191,7 @@ def map_data(word_query):
                   schema: MapListResponseSchema
     """
     args = request.args
+    library = args.get("library")
     number_of_tweets = args.get("number_of_tweets")
     function_option = args.get("function_options")
     date_until = args.get("date_until")
@@ -186,6 +203,7 @@ def map_data(word_query):
         function_option if not (function_option is None) else "",
         "en",
         date_until if not (date_until is None) else "",
+        library if not (library is None) else "",
     )
     rows = json.loads(data.to_json(orient="records"))
     return MapListResponseSchema().dump({"map_data": rows})
@@ -212,6 +230,13 @@ def polarity(word_query):
         - in: path
           schema: RawDataParameter
         - in: query
+          name: library
+          schema:
+            type: string
+            enum:
+              - textblob
+              - vader
+        - in: query
           name: number_of_tweets
           schema: RawDataQueryNumOfTweets
         - in: query
@@ -232,6 +257,7 @@ def polarity(word_query):
                   schema: PolarityListResponseSchema
     """
     args = request.args
+    library = args.get("library")
     number_of_tweets = args.get("number_of_tweets")
     function_option = args.get("function_options")
     date_until = args.get("date_until")
@@ -243,6 +269,7 @@ def polarity(word_query):
         function_option if not (function_option is None) else "",
         "en",
         date_until if not (date_until is None) else "",
+        library if not (library is None) else "",
     )
     get_graph_sentiment = utils.graph_sentiment(data)
     rows = json.loads(get_graph_sentiment.to_json(orient="records"))
@@ -270,6 +297,13 @@ def raw_data(word_query):
         parameters:
         - in: path
           schema: RawDataParameter
+        - in: query
+          name: library
+          schema:
+            type: string
+            enum:
+              - textblob
+              - vader
         - in: query
           name: number_of_tweets
           schema: RawDataQueryNumOfTweets
@@ -304,6 +338,7 @@ def raw_data(word_query):
 
     """
     args = request.args
+    library = args.get("library")
     number_of_tweets = args.get("number_of_tweets")
     function_option = args.get("function_option")
     lang_opt = args.get("lang_opt")
@@ -316,6 +351,7 @@ def raw_data(word_query):
         function_option if not (function_option is None) else "",
         lang_opt if not (function_option is None) else "en",
         date_until if not (date_until is None) else "",
+        library if not (library is None) else "",
     )
     rows = json.loads(data.to_json(orient="records"))
 
