@@ -66,6 +66,8 @@ import { barChartOptionsDashboard } from "layouts/dashboard/data/barChartOptions
 // Search context hook
 import { useSearchContext } from "contexts/Search";
 import { queryString } from "utils/queryString";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 function Dashboard() {
   const { gradients } = colors;
@@ -178,7 +180,7 @@ function Dashboard() {
               <SatisfactionRate polarity={polarity} />
             </Grid>
             <Grid item xs={12} lg={6} xl={4}>
-              {wordcloud.length > 0 ? (<ReferralTracking words2={wordcloud}  />) : (<p>Loading...</p>)}
+              {wordcloud.length > 0 ? (<ReferralTracking words2={wordcloud} />) : (<p>Loading...</p>)}
             </Grid>
           </Grid>
         </VuiBox>
