@@ -73,12 +73,13 @@ function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [library, setLibrary] = useState('');
+  
+  const { searchQuery, sentimentAnalysisLibrary } = useSearchContext();
+  
+  const [searchTerm, setSearchTerm] = useState(searchQuery);
+  const [library, setLibrary] = useState(sentimentAnalysisLibrary);
   // const [isSet, setIsSet] = useState(false);
 
-  const { searchQuery, sentimentAnalysisLibrary } = useSearchContext();
 
   const handleSearchTermChange = (e) => setSearchTerm(e.target.value);
   const handleLibraryChange = (e) => setLibrary(e.target.value);
@@ -87,10 +88,12 @@ function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
     await handleSearch(searchTerm, library);
   }
 
+  /*
   useEffect(() => {
     setSearchTerm(searchQuery);
     setLibrary(sentimentAnalysisLibrary);
-  }, [setSearchTerm, searchQuery, setLibrary, sentimentAnalysisLibrary]);
+  }, []);
+  */
 
   useEffect(() => {
     // Setting the navbar type
@@ -255,12 +258,6 @@ function DashboardNavbar({ absolute, light, isMini, handleSearch }) {
   );
 }
 
-// Setting default values for the props of DashboardNavbar
-DashboardNavbar.defaultProps = {
-  absolute: false,
-  light: false,
-  isMini: false,
-};
 
 // Typechecking props for the DashboardNavbar
 DashboardNavbar.propTypes = {

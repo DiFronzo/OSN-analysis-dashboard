@@ -56,10 +56,8 @@ import { IoDocumentText } from "react-icons/io5";
 import { FaShoppingCart } from "react-icons/fa";
 
 // Data
-import LineChart from "examples/Charts/LineCharts/LineChart";
+import LineChart from "components/charts/LineChart" // "examples/Charts/LineCharts/LineChart";
 import BarChart from "examples/Charts/BarCharts/BarChart";
-import { lineChartDataDashboard } from "layouts/dashboard/data/lineChartData";
-import { lineChartOptionsDashboard } from "layouts/dashboard/data/lineChartOptions";
 import { barChartDataDashboard } from "layouts/dashboard/data/barChartData";
 import { barChartOptionsDashboard } from "layouts/dashboard/data/barChartOptions";
 
@@ -79,27 +77,28 @@ function Dashboard() {
     advancedOptions 
   } = useSearchContext();
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [library, setLibrary] = useState('');
-
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Polarity data for pie chart
   const [polarity, setPolarity] = useState([]);
-
+  
+  const [timelineData, setTimelineData] = useState([]);
   // Data for map
   const [map, setMap] = useState([]);
 
   // Fetch data for pie chart
   const fetchPieData = async (search, lib, advanced = null) => {
+    console.log("fetchPieData", search, lib);
     setIsLoading(true);
     if (!search || !lib) {
+      console.log("exit fetchPieData");
       setPolarity([]);
       setError(null);
       setIsLoading(false);
       return;
     }
+    console.log("continue fetchPieData");
     setSearchQuery(search);
     setSentimentAnalysisLibrary(lib);
     const queryParamString = queryString(advanced);
@@ -137,20 +136,61 @@ function Dashboard() {
     setIsLoading(false);
   }
 
+  const fetchLineData = async (search, lib, advanced = null) => {
+    console.log("fetchLineData", search, lib);
+    setIsLoading(true);
+    if (!search || !lib) {
+      console.log("exit fetchLineData");
+      setTimelineData([]);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+    console.log("Continue fetchLineData");
+    setSearchQuery(search);
+    setSentimentAnalysisLibrary(lib);
+    const queryParamString = queryString(advanced);
+    try {
+      // get the data from the api
+      let data;
+      if (!showAdvanced || !queryParamString) {
+        data = await fetch(`http://127.0.0.1:5000/line/${search}?number_of_tweets=1000&library=${lib}`);
+      } else {
+        data = await fetch(`http://127.0.0.1:5000/line/${search}${queryParamString}&number_of_tweets=1000&library=${lib}`);
+      }
+      
+      // convert the data to json
+      console.log("fetchLineData 1");
+      const json = await data.json();
+      console.log("fetchLineData 2");
+      const tData = json.data;
+      console.log("fetchLineData 3");
+      setTimelineData(tData);
+      setError(null);
+    } catch (err) {
+      setTimelineData([]);
+      setError(err);
+    }
+    setIsLoading(false);
+  }
+
   useEffect(() => {
-    setSearchTerm(searchQuery);
-    setLibrary(sentimentAnalysisLibrary);
+    console.log("test");
     fetchPieData(searchQuery, sentimentAnalysisLibrary, showAdvanced ? advancedOptions : null);
+    fetchLineData(searchQuery, sentimentAnalysisLibrary, showAdvanced ? advancedOptions : null);
   }, []);
+
+  const handleSearch = async (search, lib) => {
+    await Promise.all([
+      fetchPieData(search, lib, showAdvanced ? advancedOptions : null), 
+      fetchLineData(search, lib, showAdvanced ? advancedOptions : null)
+    ]);
+  }
 
   return (
     <DashboardLayout>
-      <DashboardNavbar 
-        searchTerm={searchTerm} 
-        setSearchTerm={setSearchTerm} 
-        library={library} 
-        setLibrary={setLibrary} 
-        handleSearch={fetchPieData} 
+      <DashboardNavbar
+        handleSearch={handleSearch} 
       />
       <VuiBox py={3}>
         <VuiBox mb={3}>
@@ -172,20 +212,12 @@ function Dashboard() {
               <Card>
                 <VuiBox sx={{ height: "100%" }}>
                   <VuiTypography variant="lg" color="white" fontWeight="bold" mb="5px">
-                    Sales Overview
+                    Sentiment over time
                   </VuiTypography>
-                  <VuiBox display="flex" alignItems="center" mb="40px">
-                    <VuiTypography variant="button" color="success" fontWeight="bold">
-                      +5% more{" "}
-                      <VuiTypography variant="button" color="text" fontWeight="regular">
-                        in 2021
-                      </VuiTypography>
-                    </VuiTypography>
-                  </VuiBox>
                   <VuiBox sx={{ height: "310px" }}>
                     <LineChart
-                      lineChartData={lineChartDataDashboard}
-                      lineChartOptions={lineChartOptionsDashboard}
+                      colors={["lightgreen", "lightgray", "red"]}
+                      data={timelineData}
                     />
                   </VuiBox>
                 </VuiBox>

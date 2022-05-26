@@ -7,35 +7,43 @@ import pandas as pd
 import tweepy
 from tweepy.cursor import ItemIterator
 
-from processing.utils import extract_mentions, extract_hastag, get_analysis, get_subjectivity, get_polarity, \
-                             get_polarity_vader, get_analysis_vader
+from processing.utils import (
+    extract_mentions,
+    extract_hastag,
+    get_analysis,
+    get_subjectivity,
+    get_polarity,
+    get_polarity_vader,
+    get_analysis_vader,
+)
 
 
 class Preprocessing:
-    emoji_pattern = re.compile("["
-                               u"\U0001F600-\U0001F64F"  # emoticons
-                               u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-                               u"\U0001F680-\U0001F6FF"  # transport & map symbols
-                               u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-                               u"\U00002500-\U00002BEF"  # chinese char
-                               u"\U00002702-\U000027B0"
-                               u"\U00002702-\U000027B0"
-                               u"\U000024C2-\U0001F251"
-                               u"\U0001f926-\U0001f937"
-                               u"\U00010000-\U0010ffff"
-                               u"\u2640-\u2642"
-                               u"\u2600-\u2B55"
-                               u"\u200d"
-                               u"\u23cf"
-                               u"\u23e9"
-                               u"\u231a"
-                               u"\ufe0f"  # dingbats
-                               u"\u3030"  # flags (iOS)
-                               "]+", flags=re.UNICODE)
+    emoji_pattern = re.compile(
+        "["
+        "\U0001F600-\U0001F64F"  # emoticons
+        "\U0001F300-\U0001F5FF"  # symbols & pictographs
+        "\U0001F680-\U0001F6FF"  # transport & map symbols
+        "\U0001F1E0-\U0001F1FF"  # flags (iOS)
+        "\U00002500-\U00002BEF"  # chinese char
+        "\U00002702-\U000027B0"
+        "\U00002702-\U000027B0"
+        "\U000024C2-\U0001F251"
+        "\U0001f926-\U0001f937"
+        "\U00010000-\U0010ffff"
+        "\u2640-\u2642"
+        "\u2600-\u2B55"
+        "\u200d"
+        "\u23cf"
+        "\u23e9"
+        "\u231a"
+        "\ufe0f"  # dingbats
+        "\u3030"  # flags (iOS)
+        "]+",
+        flags=re.UNICODE,
+    )
 
-    def __init__(
-            self
-    ):
+    def __init__(self):
         config = configparser.ConfigParser()
         config.read("config.ini")
 
@@ -64,20 +72,33 @@ class Preprocessing:
         -------
         The same txt string but cleaned
         """
-        text = re.sub('@[A-Za-z0–9]+', '', text)  # Removing @mentions
-        text = re.sub('#', '', text)  # Removing '#' hash tag
-        text = re.sub('RT[\s]+', '', text)  # Removing RT
-        text = re.sub('https?:\/\/\S+', '', text)
+        text = re.sub("@[A-Za-z0–9]+", "", text)  # Removing @mentions
+        text = re.sub("#", "", text)  # Removing '#' hash tag
+        text = re.sub("RT[\s]+", "", text)  # Removing RT
+        text = re.sub("https?:\/\/\S+", "", text)
         text = re.sub("\n", "", text)  # Removing hyperlink
         text = re.sub(":", "", text)  # Removing hyperlink
         text = re.sub("_", "", text)  # Removing hyperlink
         text = re.sub("h(m)+", "", text)  # Removing the word 'hmm' and it's variants
         text = text.replace("&amp;", "&")  # Replace &amp; with &
-        text = self.emoji_pattern.sub(r'', text)
+        text = self.emoji_pattern.sub(r"", text)
 
-        slang = {'luv': 'love', 'wud': 'would', 'lyk': 'like', 'wateva': 'whatever', 'ttyl': 'talk to you later',
-                 'kul': 'cool', 'fyn': 'fine', 'omg': 'oh my god', 'fam': 'family', 'bruh': 'brother',
-                 'cud': 'could', 'fud': 'food', 'lol': 'laughing out loud', 'rly': 'really'}  ## Need a huge dictionary
+        slang = {
+            "luv": "love",
+            "wud": "would",
+            "lyk": "like",
+            "wateva": "whatever",
+            "ttyl": "talk to you later",
+            "kul": "cool",
+            "fyn": "fine",
+            "omg": "oh my god",
+            "fam": "family",
+            "bruh": "brother",
+            "cud": "could",
+            "fud": "food",
+            "lol": "laughing out loud",
+            "rly": "really",
+        }  ## Need a huge dictionary
         text = text.split()
         reformed = [slang[word] if word in slang else word for word in text]
         text = " ".join(reformed)
@@ -85,8 +106,14 @@ class Preprocessing:
         return text
 
     # TODO! Cache this function
-    def preprocessing_data(self, word_query: str, number_of_tweets: int, function_option="",
-                           lang_opt="en", vader=False) -> pd.DataFrame:
+    def preprocessing_data(
+        self,
+        word_query: str,
+        number_of_tweets: int,
+        function_option="",
+        lang_opt="en",
+        vader=False,
+    ) -> pd.DataFrame:
         """Finds real-time tweets and finds polarity
 
         Parameters
@@ -111,19 +138,44 @@ class Preprocessing:
         posts: ItemIterator
         # TODO! add start date of the search if needed and make a option for "-filter:.."
         if function_option.lower() == "username":
-            posts = tweepy.Cursor(self.api.user_timeline, screen_name=word_query, count=200,
-                                  tweet_mode="extended").items(
-                number_of_tweets)
+            posts = tweepy.Cursor(
+                self.api.user_timeline,
+                screen_name=word_query,
+                count=200,
+                tweet_mode="extended",
+            ).items(number_of_tweets)
         else:
-            posts = tweepy.Cursor(self.api.search_tweets, q=word_query + " -filter:retweets", count=200,
-                                  lang=lang_opt,
-                                  tweet_mode="extended").items(
-                number_of_tweets)
+            posts = tweepy.Cursor(
+                self.api.search_tweets,
+                q=word_query + " -filter:retweets",
+                count=200,
+                lang=lang_opt,
+                tweet_mode="extended",
+            ).items(number_of_tweets)
 
-        data = pd.DataFrame([[tweet.full_text, tweet.created_at, tweet.user.location, tweet.place, tweet.coordinates,
-                              tweet.user.profile_image_url_https, tweet.user.screen_name] for tweet in posts],
-                            columns=['tweets', 'date', "location", "place", "coordinates", "profile_img",
-                                     "screen_name"])
+        data = pd.DataFrame(
+            [
+                [
+                    tweet.full_text,
+                    tweet.created_at,
+                    tweet.user.location,
+                    tweet.place,
+                    tweet.coordinates,
+                    tweet.user.profile_image_url_https,
+                    tweet.user.screen_name,
+                ]
+                for tweet in posts
+            ],
+            columns=[
+                "tweets",
+                "date",
+                "location",
+                "place",
+                "coordinates",
+                "profile_img",
+                "screen_name",
+            ],
+        )
 
         if data.empty:
             return data
@@ -131,29 +183,40 @@ class Preprocessing:
         data["mentions"] = data["tweets"].apply(extract_mentions)
         data["hastags"] = data["tweets"].apply(extract_hastag)
         # data['links'] = data['tweets'].str.extract('(https?:\/\/\S+)', expand=False).str.strip()
-        data['retweets'] = data['tweets'].str.extract('(RT[\s@[A-Za-z0–9\d\w]+)', expand=False).str.strip()
-        data['profile_img'] = "http://127.0.0.1:5000" + data['profile_img'].str[21:]
+        data["retweets"] = (
+            data["tweets"]
+            .str.extract("(RT[\s@[A-Za-z0–9\d\w]+)", expand=False)
+            .str.strip()
+        )
+        data["profile_img"] = "http://127.0.0.1:5000" + data["profile_img"].str[21:]
 
-        data['tweets'] = data['tweets'].apply(self.clean_txt)
-        discard = ["CNFTGiveaway", "GIVEAWAYPrizes", "Giveaway", "Airdrop", "GIVEAWAY", "makemoneyonline",
-                   "affiliatemarketing", "FreeBitcoins"]
-        data = data[~data["tweets"].str.contains('|'.join(discard))]
+        data["tweets"] = data["tweets"].apply(self.clean_txt)
+        discard = [
+            "CNFTGiveaway",
+            "GIVEAWAYPrizes",
+            "Giveaway",
+            "Airdrop",
+            "GIVEAWAY",
+            "makemoneyonline",
+            "affiliatemarketing",
+            "FreeBitcoins",
+        ]
+        data = data[~data["tweets"].str.contains("|".join(discard))]
 
-        data['subjectivity'] = data['tweets'].apply(get_subjectivity)
+        data["subjectivity"] = data["tweets"].apply(get_subjectivity)
 
         if vader:
-            data['polarity'] = data['tweets'].apply(get_polarity_vader)
-            data['analysis'] = data['polarity'].apply(get_analysis_vader)
+            data["polarity"] = data["tweets"].apply(get_polarity_vader)
+            data["analysis"] = data["polarity"].apply(get_analysis_vader)
         else:
-            data['polarity'] = data['tweets'].apply(get_polarity)
-            data['analysis'] = data['polarity'].apply(get_analysis)
+            data["polarity"] = data["tweets"].apply(get_polarity)
+            data["analysis"] = data["polarity"].apply(get_analysis)
 
         # word counter for top 15
         # TODO! remove the word_query word sent by the user
-        words = [tweet.lower().split() for tweet in data['tweets']]
+        words = [tweet.lower().split() for tweet in data["tweets"]]
         all_words = list(itertools.chain(*words))
         counts = collections.Counter(all_words)
-        self.words = pd.DataFrame(counts.most_common(15),
-                                  columns=['words', 'count'])
+        self.words = pd.DataFrame(counts.most_common(15), columns=["words", "count"])
 
         return data
