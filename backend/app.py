@@ -1,5 +1,7 @@
 import io
 import json
+import math
+import time
 
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
@@ -33,12 +35,75 @@ SITE_NAME = "https://pbs.twimg.com/"
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
-@cache.cached(
-    timeout=60, query_string=True
-)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
+# @cache.cached(timeout=60, query_string=True)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def proxy(path):
     tw_file = get(f"{SITE_NAME}{path}").content
     return send_file(io.BytesIO(tw_file), mimetype="image/jpeg")
+
+
+class TimelineDataSchema(Schema):
+    name = fields.Str()
+    data = fields.List(fields.List(fields.Int()))
+
+
+class TimelineResponseSchema(Schema):
+    data = fields.List(fields.Nested(TimelineDataSchema))
+
+
+class TimelineDataQueryNumOfPoints(Schema):
+    number_of_points = fields.Int()
+
+
+@app.route("/line/<word_query>", methods=["GET"])
+# @cache.cached(timeout=60, query_string=True)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
+def timeline(word_query):
+    """Get list of aggregated sentiment data at different points in a timespan
+    ---
+    get:
+        description: Get list of aggregated sentiment data at different points in a timespan
+        parameters:
+        - in: path
+            schema: RawDataParameter
+        - in: query
+            name: number_of_tweets
+            schema: RawDataQueryNumOfTweets
+        - in: query
+            name: number_of_points
+            schema: TimelineDataQueryNumOfPoints
+        responses:
+            200:
+                content:
+                application/json:
+                schema: TimelineResponseSchema
+    """
+    args = request.args
+    number_of_tweets = args.get("number_of_tweets")
+    number_of_points = args.get("number_of_points")
+
+    r = Preprocessing()
+    data = r.preprocessing_data(
+        word_query, int(number_of_tweets) if not (number_of_tweets is None) else 100
+    )
+    rows = json.loads(data.to_json(orient="records"))
+    earliest = round((time.time() * 1000) + 1)
+    newest = 0
+
+    # Find the earliest and newest dates from the data
+    for item in rows:
+        d = item["date"]
+        if d < earliest:
+            earliest = d
+        if d > newest:
+            newest = d
+
+    n = int(number_of_points) if (not number_of_points is None) else 10
+    n = n if (n > 0) else 10
+
+    timespan = newest - earliest
+    interval = math.ceil(timespan / n) + 1
+    results = utils.get_line_chart_data(rows, interval, earliest, n)
+
+    return TimelineResponseSchema().dump({"data": results})
 
 
 class MapResponseSchema(Schema):
@@ -53,9 +118,7 @@ class MapListResponseSchema(Schema):
 
 
 @app.route("/map/<word_query>", methods=["GET"])
-@cache.cached(
-    timeout=60, query_string=True
-)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
+# @cache.cached(timeout=60, query_string=True)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def map_data(word_query):
     """Get List of coordinates, place, or location for Tweets
     ---
@@ -98,9 +161,7 @@ class RawDataQueryNumOfTweets(Schema):
 
 
 @app.route("/pie/<word_query>", methods=["GET"])
-@cache.cached(
-    timeout=30, query_string=True
-)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
+# @cache.cached(timeout=60, query_string=True)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def polarity(word_query):
     """Get List of Sentiments for Tweets
     ---
@@ -145,9 +206,7 @@ class PolarityListResponseSchema(Schema):
 
 
 @app.route("/raw_data/<word_query>", methods=["GET"])
-@cache.cached(
-    timeout=60, query_string=True
-)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
+# @cache.cached(timeout=60, query_string=True)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def raw_data(word_query):
     """Get List of Raw Tweets
     ---
