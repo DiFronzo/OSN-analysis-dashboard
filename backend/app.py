@@ -32,8 +32,8 @@ def proxy(path):
 
 
 class WCResponseSchema(Schema):
-    words = fields.Str()
-    count = fields.Int()
+    text = fields.Str()
+    value = fields.Int()
 
 
 class WCListResponseSchema(Schema):

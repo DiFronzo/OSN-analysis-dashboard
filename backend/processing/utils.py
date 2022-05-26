@@ -59,18 +59,24 @@ def graph_pos_words(data: pd.DataFrame) -> DataFrame:
     words = [word.lower().split() for word in data['tweets'][data['analysis'] == "Positive"]]
     all_words = list(itertools.chain(*words))
     counts = collections.Counter(all_words)
-    return pd.DataFrame(counts.most_common(15), columns=['words', 'count'])
+    data_pd = pd.DataFrame(counts.most_common(100), columns=['words', 'count'])
+    data_pd.rename(columns={'words': 'text', 'count': 'value'}, inplace=True)
+    return data_pd
 
 
 def graph_neu_words(data: pd.DataFrame) -> DataFrame:
     words = [word.lower().split() for word in data['tweets'][data['analysis'] == "Neutral"]]
     all_words = list(itertools.chain(*words))
     counts = collections.Counter(all_words)
-    return pd.DataFrame(counts.most_common(15), columns=['words', 'count'])
+    data_pd = pd.DataFrame(counts.most_common(100), columns=['words', 'count'])
+    data_pd.rename(columns={'words': 'text', 'count': 'value'}, inplace=True)
+    return data_pd
 
 
 def graph_neg_words(data: pd.DataFrame) -> DataFrame:
     words = [word.lower().split() for word in data['tweets'][data['analysis'] == "Negative"]]
     all_words = list(itertools.chain(*words))
     counts = collections.Counter(all_words)
-    return pd.DataFrame(counts.most_common(15), columns=['words', 'count'])
+    data_pd = pd.DataFrame(counts.most_common(100), columns=['words', 'count'])
+    data_pd.rename(columns={'words': 'text', 'count': 'value'}, inplace=True)
+    return data_pd

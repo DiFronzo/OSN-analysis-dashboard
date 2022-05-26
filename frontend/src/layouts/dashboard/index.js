@@ -91,6 +91,9 @@ function Dashboard() {
   // Data for map
   const [map, setMap] = useState([]);
 
+  // Data for word cloud
+  const [wordcloud, setWordcloud] = useState([]);
+
   // Fetch data for pie chart
   const fetchPieData = async (search, lib, advanced = null) => {
     setIsLoading(true);
@@ -129,6 +132,19 @@ function Dashboard() {
     let result_map = await json_map.map_data?.map(({ place }) => place ? (place.bounding_box["coordinates"][0][0]) : null);
     setMap(result_map);
     setError(null);
+
+    let data_wc;
+    if (!showAdvanced || !queryParamString) {
+      data_wc = await fetch(`http://127.0.0.1:5000/wordcloud/${search}?number_of_tweets=500&library=${lib}&function_option=positive`);
+    } else {
+      data_wc = await fetch(`http://127.0.0.1:5000/wordcloud/${search}${queryParamString}&number_of_tweets=500&library=${lib}&function_option=positive`);
+    }
+
+      // convert the data to json
+    const json_wc = await data_wc.json();
+    setWordcloud(json_wc.wc_data);
+    setError(null);
+
     } catch (err) {
       setPolarity([]);
       setMap([]);
@@ -162,7 +178,7 @@ function Dashboard() {
               <SatisfactionRate polarity={polarity} />
             </Grid>
             <Grid item xs={12} lg={6} xl={4}>
-              <ReferralTracking />
+              {wordcloud.length > 0 ? (<ReferralTracking words2={wordcloud}  />) : (<p>Loading...</p>)}
             </Grid>
           </Grid>
         </VuiBox>
