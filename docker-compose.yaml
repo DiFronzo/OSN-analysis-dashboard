@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  server:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    entrypoint: python app.py  
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./.env
+  web:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/user/src/app
+    depends_on:
+      - server
+  redis:
+    image: redis
+    container_name: redis-container
+    ports:
+      - "6379:6379"

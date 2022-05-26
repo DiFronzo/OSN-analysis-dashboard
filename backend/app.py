@@ -16,12 +16,17 @@ from flask import (
 from marshmallow import Schema, fields
 from flask_cors import CORS
 from requests import get
+from flask_caching import Cache  # Import Cache from flask_caching module
 
 from preprocessing import Preprocessing
 from processing import utils
 
 # https://github.com/marshmallow-code/apispec
 app = Flask(__name__, template_folder="swagger/templates")
+app.config.from_object(
+    "config.Config"
+)  # Set the configuration variables to the flask application
+cache = Cache(app)  # Initialize Cache
 CORS(app)
 
 SITE_NAME = "https://pbs.twimg.com/"
@@ -110,6 +115,7 @@ class MapListResponseSchema(Schema):
 
 
 @app.route("/map/<word_query>", methods=["GET"])
+# @cache.cached(timeout=60, query_string=True) THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def map_data(word_query):
     """Get List of coordinates, place, or location for Tweets
     ---
@@ -150,6 +156,7 @@ class RawDataQueryNumOfTweets(Schema):
 
 
 @app.route("/pie/<word_query>", methods=["GET"])
+# @cache.cached(timeout=30, query_string=True) THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def polarity(word_query):
     """Get List of Sentiments for Tweets
     ---
@@ -192,6 +199,7 @@ class PolarityListResponseSchema(Schema):
 
 
 @app.route("/raw_data/<word_query>", methods=["GET"])
+# @cache.cached(timeout=60, query_string=True) # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def raw_data(word_query):
     """Get List of Raw Tweets
     ---
@@ -295,4 +303,4 @@ def swagger_docs(path=None):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5000)
