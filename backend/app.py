@@ -54,6 +54,7 @@ class TimelineDataQueryNumOfPoints(Schema):
 
 
 @app.route("/line/<word_query>", methods=["GET"])
+# @cache.cached(timeout=60, query_string=True)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def timeline(word_query):
     """Get list of aggregated sentiment data at different points in a timespan
     ---
@@ -116,9 +117,7 @@ class MapListResponseSchema(Schema):
 
 
 @app.route("/map/<word_query>", methods=["GET"])
-@cache.cached(
-    timeout=60, query_string=True
-)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
+# @cache.cached(timeout=60, query_string=True)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def map_data(word_query):
     """Get List of coordinates, place, or location for Tweets
     ---
@@ -159,9 +158,7 @@ class RawDataQueryNumOfTweets(Schema):
 
 
 @app.route("/pie/<word_query>", methods=["GET"])
-@cache.cached(
-    timeout=30, query_string=True
-)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
+# @cache.cached(timeout=60, query_string=True)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def polarity(word_query):
     """Get List of Sentiments for Tweets
     ---
@@ -204,9 +201,7 @@ class PolarityListResponseSchema(Schema):
 
 
 @app.route("/raw_data/<word_query>", methods=["GET"])
-@cache.cached(
-    timeout=60, query_string=True
-)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
+# @cache.cached(timeout=60, query_string=True)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def raw_data(word_query):
     """Get List of Raw Tweets
     ---

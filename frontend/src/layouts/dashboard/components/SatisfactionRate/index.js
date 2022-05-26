@@ -4,7 +4,7 @@ import { Card } from "@mui/material";
 import VuiBox from "components/VuiBox";
 import VuiTypography from "components/VuiTypography";
 
-import PieChart from "components/charts/PieCharts";
+import PieChart from "components/charts/pieCharts";
 
 export const pieChartOptionsCharts1 = {
   labels: ["Positive", "Neutral", "Negative"],
