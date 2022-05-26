@@ -543,6 +543,7 @@ function ReferralTracking() {
         <VuiBox
           flexDirection="column"
           display="flex"
+          sx={{ height: "200px" }}
         >
           <ReactWordcloud words={words} />
 
