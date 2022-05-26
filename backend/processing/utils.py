@@ -1,6 +1,5 @@
-import math
 import re
-import time
+from datetime import datetime
 
 import pandas as pd
 from textblob import TextBlob
@@ -68,6 +67,15 @@ def graph_neu_words(data: pd.DataFrame) -> str:
 
 def graph_neg_words(data: pd.DataFrame) -> str:
     return " ".join([word for word in data["tweets"][data["analysis"] == "Negative"]])
+
+
+def is_date_format(value: str):
+    date_format = "%Y-%m-%d"
+    try:
+        datetime.strptime(value, date_format)
+        return True
+    except ValueError:
+        return False
 
 
 def get_line_chart_data(

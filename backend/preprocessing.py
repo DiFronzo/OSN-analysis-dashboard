@@ -15,6 +15,7 @@ from processing.utils import (
     get_polarity,
     get_polarity_vader,
     get_analysis_vader,
+    is_date_format,
 )
 
 
@@ -112,7 +113,7 @@ class Preprocessing:
         number_of_tweets: int,
         function_option="",
         lang_opt="en",
-        until_date="",
+        date_until="",
         vader=False,
     ) -> pd.DataFrame:
         """Finds real-time tweets and finds polarity
@@ -138,13 +139,14 @@ class Preprocessing:
 
         posts: ItemIterator
         # TODO! add start date of the search if needed and make a option for "-filter:.."
+        date = date_until if (is_date_format(date_until)) else None
         if function_option.lower() == "username":
             posts = tweepy.Cursor(
                 self.api.user_timeline,
                 screen_name=word_query,
                 count=200,
                 tweet_mode="extended",
-                until=until_date,
+                until=date,
             ).items(number_of_tweets)
         else:
             posts = tweepy.Cursor(
@@ -153,7 +155,7 @@ class Preprocessing:
                 count=200,
                 lang=lang_opt,
                 tweet_mode="extended",
-                until=until_date,
+                until=date,
             ).items(number_of_tweets)
 
         data = pd.DataFrame(

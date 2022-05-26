@@ -35,10 +35,16 @@ SITE_NAME = "https://pbs.twimg.com/"
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
-# @cache.cached(timeout=60, query_string=True)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
+@cache.cached(
+    timeout=60, query_string=True
+)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def proxy(path):
     tw_file = get(f"{SITE_NAME}{path}").content
     return send_file(io.BytesIO(tw_file), mimetype="image/jpeg")
+
+
+class DateUntilQuery(Schema):
+    date_until = fields.Str()
 
 
 class TimelineDataSchema(Schema):
@@ -55,7 +61,9 @@ class TimelineDataQueryNumOfPoints(Schema):
 
 
 @app.route("/line/<word_query>", methods=["GET"])
-# @cache.cached(timeout=60, query_string=True)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
+@cache.cached(
+    timeout=60, query_string=True
+)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def timeline(word_query):
     """Get list of aggregated sentiment data at different points in a timespan
     ---
@@ -70,6 +78,17 @@ def timeline(word_query):
         - in: query
             name: number_of_points
             schema: TimelineDataQueryNumOfPoints
+        - in: query
+          name: function_option
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - username
+        - in: query
+            name: date_until
+            schema: DateUntilQuery
         responses:
             200:
                 content:
@@ -79,10 +98,16 @@ def timeline(word_query):
     args = request.args
     number_of_tweets = args.get("number_of_tweets")
     number_of_points = args.get("number_of_points")
+    function_option = args.get("function_option")
+    date_until = args.get("date_until")
 
     r = Preprocessing()
     data = r.preprocessing_data(
-        word_query, int(number_of_tweets) if not (number_of_tweets is None) else 100
+        word_query,
+        int(number_of_tweets) if not (number_of_tweets is None) else 100,
+        function_option if not (function_option is None) else "",
+        "en",
+        date_until if not (date_until is None) else "",
     )
     rows = json.loads(data.to_json(orient="records"))
     earliest = round((time.time() * 1000) + 1)
@@ -118,7 +143,9 @@ class MapListResponseSchema(Schema):
 
 
 @app.route("/map/<word_query>", methods=["GET"])
-# @cache.cached(timeout=60, query_string=True)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
+@cache.cached(
+    timeout=60, query_string=True
+)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def map_data(word_query):
     """Get List of coordinates, place, or location for Tweets
     ---
@@ -130,6 +157,17 @@ def map_data(word_query):
         - in: query
           name: number_of_tweets
           schema: RawDataQueryNumOfTweets
+        - in: query
+          name: function_option
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - username
+        - in: query
+          name: date_until
+          schema: DateUntilQuery
         responses:
             200:
               content:
@@ -138,15 +176,16 @@ def map_data(word_query):
     """
     args = request.args
     number_of_tweets = args.get("number_of_tweets")
-    until_date = args.get("until_date")
+    function_option = args.get("function_options")
+    date_until = args.get("date_until")
 
     r = Preprocessing()
     data = r.preprocessing_data(
         word_query,
         int(number_of_tweets) if not (number_of_tweets is None) else 100,
-        "",
+        function_option if not (function_option is None) else "",
         "en",
-        until_date,
+        date_until if not (date_until is None) else "",
     )
     rows = json.loads(data.to_json(orient="records"))
     return MapListResponseSchema().dump({"map_data": rows})
@@ -161,7 +200,9 @@ class RawDataQueryNumOfTweets(Schema):
 
 
 @app.route("/pie/<word_query>", methods=["GET"])
-# @cache.cached(timeout=60, query_string=True)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
+@cache.cached(
+    timeout=60, query_string=True
+)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def polarity(word_query):
     """Get List of Sentiments for Tweets
     ---
@@ -173,6 +214,17 @@ def polarity(word_query):
         - in: query
           name: number_of_tweets
           schema: RawDataQueryNumOfTweets
+        - in: query
+          name: function_option
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - username
+        - in: query
+          name: date_until
+          schema: DateUntilQuery
         responses:
             200:
               content:
@@ -181,15 +233,16 @@ def polarity(word_query):
     """
     args = request.args
     number_of_tweets = args.get("number_of_tweets")
-    until_date = args.get("until_date")
+    function_option = args.get("function_options")
+    date_until = args.get("date_until")
 
     r = Preprocessing()
     data = r.preprocessing_data(
         word_query,
         int(number_of_tweets) if not (number_of_tweets is None) else 100,
-        "",
+        function_option if not (function_option is None) else "",
         "en",
-        until_date,
+        date_until if not (date_until is None) else "",
     )
     get_graph_sentiment = utils.graph_sentiment(data)
     rows = json.loads(get_graph_sentiment.to_json(orient="records"))
@@ -206,7 +259,9 @@ class PolarityListResponseSchema(Schema):
 
 
 @app.route("/raw_data/<word_query>", methods=["GET"])
-# @cache.cached(timeout=60, query_string=True)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
+@cache.cached(
+    timeout=60, query_string=True
+)  # THIS NEEDS TO BE UNCOMMENTED IN PRODUCTION
 def raw_data(word_query):
     """Get List of Raw Tweets
     ---
@@ -237,6 +292,9 @@ def raw_data(word_query):
                 - "no"
                 - sv
                 - da
+        - in: query
+          name: date_until
+          schema: DateUntilQuery
         responses:
             200:
                 description: Return a tweet list
@@ -249,7 +307,7 @@ def raw_data(word_query):
     number_of_tweets = args.get("number_of_tweets")
     function_option = args.get("function_option")
     lang_opt = args.get("lang_opt")
-    until_date = args.get("until_date")
+    date_until = args.get("date_until")
 
     r = Preprocessing()
     data = r.preprocessing_data(
@@ -257,7 +315,7 @@ def raw_data(word_query):
         int(number_of_tweets) if not (number_of_tweets is None) else 100,
         function_option if not (function_option is None) else "",
         lang_opt if not (function_option is None) else "en",
-        until_date,
+        date_until if not (date_until is None) else "",
     )
     rows = json.loads(data.to_json(orient="records"))
 
