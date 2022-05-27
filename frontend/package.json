@@ -1,0 +1,69 @@
+{
+  "name": "OSN-dashboard-react",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Creative Tim & the OSN group",
+  "license": "MIT",
+  "description": "Dashboard",
+  "dependencies": {
+    "@chakra-ui/react": "^1.8.8",
+    "@delowar/react-circle-progressbar": "^1.0.0",
+    "@emotion/cache": "11.4.0",
+    "@emotion/react": "11.4.1",
+    "@emotion/styled": "11.3.0",
+    "@mui/icons-material": "5.1.1",
+    "@mui/material": "5.1.1",
+    "@mui/styled-engine": "5.1.1",
+    "@mui/styles": "^5.2.0",
+    "@testing-library/jest-dom": "5.11.4",
+    "@testing-library/react": "11.1.0",
+    "@testing-library/user-event": "12.1.10",
+    "apexcharts": "^3.30.0",
+    "chart.js": "^3.7.1",
+    "chroma-js": "2.1.2",
+    "components": "^0.1.0",
+    "framer-motion": "^6.3.3",
+    "prop-types": "15.7.2",
+    "react": "17.0.2",
+    "react-apexcharts": "^1.3.9",
+    "react-chartjs-2": "^4.1.0",
+    "react-countup": "5.2.0",
+    "react-d3-cloud": "^1.0.5",
+    "react-dom": "17.0.2",
+    "react-flatpickr": "3.10.7",
+    "react-github-btn": "1.2.1",
+    "react-icons": "^4.3.1",
+    "react-router-dom": "5.2.0",
+    "react-scripts": "^5.0.0",
+    "react-simple-maps": "^2.3.0",
+    "stylis": "4.0.10",
+    "stylis-plugin-rtl": "2.1.0",
+    "uuid": "8.3.2",
+    "web-vitals": "1.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
