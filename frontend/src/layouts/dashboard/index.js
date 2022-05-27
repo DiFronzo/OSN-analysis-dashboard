@@ -16,7 +16,7 @@
 
 */
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -64,8 +64,39 @@ import { barChartOptionsDashboard } from "layouts/dashboard/data/barChartOptions
 // Search context hook
 import { useSearchContext } from "contexts/Search";
 import { queryString } from "utils/queryString";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import WordCloud from "react-d3-cloud";
 
 function Dashboard() {
+
+  const [menu, setMenu] = useState(null);
+
+  const openMenu = ({ currentTarget }) => setMenu(currentTarget);
+  const closeMenu = () => setMenu(null);
+
+  const renderMenu = (
+    <Menu
+      id="simple-menu"
+      anchorEl={menu}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "left",
+      }}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={Boolean(menu)}
+      onClose={closeMenu}
+    >
+      <MenuItem onClick={closeMenu}>Positive</MenuItem>
+      <MenuItem onClick={closeMenu}>Neutral</MenuItem>
+      <MenuItem onClick={closeMenu}>Negative</MenuItem>
+
+    </Menu>
+  );
+
   const { gradients } = colors;
   const { cardContent } = gradients;
   const { 
@@ -86,6 +117,9 @@ function Dashboard() {
   const [timelineData, setTimelineData] = useState([]);
   // Data for map
   const [map, setMap] = useState([]);
+
+  // Data for word cloud
+  const [wordcloud, setWordcloud] = useState([]);
 
   // Fetch data for pie chart
   const fetchPieData = async (search, lib, advanced = null) => {
@@ -128,6 +162,19 @@ function Dashboard() {
     let result_map = await json_map.map_data?.map(({ place }) => place ? (place.bounding_box["coordinates"][0][0]) : null);
     setMap(result_map);
     setError(null);
+
+    let data_wc;
+    if (!showAdvanced || !queryParamString) {
+      data_wc = await fetch(`http://127.0.0.1:5000/wordcloud/${search}?number_of_tweets=500&library=${lib}&function_option=positive`);
+    } else {
+      data_wc = await fetch(`http://127.0.0.1:5000/wordcloud/${search}${queryParamString}&number_of_tweets=500&library=${lib}&function_option=positive`);
+    }
+
+      // convert the data to json
+    const json_wc = await data_wc.json();
+    setWordcloud(json_wc.wc_data);
+    setError(null);
+
     } catch (err) {
       setPolarity([]);
       setMap([]);
@@ -137,16 +184,13 @@ function Dashboard() {
   }
 
   const fetchLineData = async (search, lib, advanced = null) => {
-    console.log("fetchLineData", search, lib);
     setIsLoading(true);
     if (!search || !lib) {
-      console.log("exit fetchLineData");
       setTimelineData([]);
       setError(null);
       setIsLoading(false);
       return;
     }
-    console.log("Continue fetchLineData");
     setSearchQuery(search);
     setSentimentAnalysisLibrary(lib);
     const queryParamString = queryString(advanced);
@@ -160,11 +204,8 @@ function Dashboard() {
       }
       
       // convert the data to json
-      console.log("fetchLineData 1");
       const json = await data.json();
-      console.log("fetchLineData 2");
       const tData = json.data;
-      console.log("fetchLineData 3");
       setTimelineData(tData);
       setError(null);
     } catch (err) {
@@ -202,7 +243,46 @@ function Dashboard() {
               <SatisfactionRate polarity={polarity} />
             </Grid>
             <Grid item xs={12} lg={6} xl={4}>
-              <ReferralTracking />
+              <Card
+                sx={{
+                  height: "100%",
+                  background: linearGradient(
+                    gradients.cardDark.main,
+                    gradients.cardDark.state,
+                    gradients.cardDark.deg
+                  ),
+                }}
+              >
+                <VuiBox sx={{ width: "100%" }}>
+                  <VuiBox
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-beetween"
+                    sx={{ width: "100%" }}
+                    mb="40px"
+                  >
+                    <VuiTypography variant="lg" color="white" mr="auto" fontWeight="bold">
+                      Word Cloud {renderMenu}
+                    </VuiTypography>
+                    <VuiTypography variant="lg" color="white">
+                      (Positive)
+                    </VuiTypography>
+                    <VuiBox display="flex" color="text" px={2}>
+                      <Icon sx={{ cursor: "pointer", fontWeight: "bold" }} fontSize="small" onClick={openMenu}>
+                        more_vert
+                      </Icon>
+                    </VuiBox>
+                  </VuiBox>
+                  <VuiBox
+                    flexDirection="column"
+                    display="flex"
+                    sx={{ height: "200px" }}
+                  >
+                    {wordcloud.length > 0 ? (<ReferralTracking words2={wordcloud} />) : (<p>Loading...</p>)}
+                  </VuiBox>
+                </VuiBox>
+              </Card>
+
             </Grid>
           </Grid>
         </VuiBox>
