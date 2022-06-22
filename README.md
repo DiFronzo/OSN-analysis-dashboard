@@ -1,5 +1,10 @@
-# OSN-analysis-dashboard
-Project in IMT4807.
+<h1 align="center">
+   OSN Analysis Dashboard
+  <img src="./misc/dash.png" width="700px" alt="logo of the project"/><br/>
+</h1>
+<p align="center">Twitter Sentiment Analysis Dashboard using #tag, words and username.
+
+<p align="center"><a href="https://github.com/DiFronzo/OSN-analysis-dashboard/releases" target="_blank"><img src="https://img.shields.io/badge/version-v1.0.0-blue?style=for-the-badge&logo=none" alt="OSN-A-D version" /></a>&nbsp;<a href="https://www.python.org/" target="_blank"><img src="https://img.shields.io/badge/python-3.5+-blue?style=for-the-badge&logo=python" alt="python version" /></a>&nbsp;<a href="https://github.com/DiFronzo/OSN-analysis-dashboard/blob/main/LICENSE" target="_blank"><img src="https://img.shields.io/badge/license-MIT-red?style=for-the-badge&logo=none" alt="license" /></a>&nbsp;<img alt="code size" src="https://img.shields.io/github/languages/code-size/difronzo/OSN-analysis-dashboard?style=for-the-badge&logo=none"/>&nbsp;<a href="https://github.com/DiFronzo/OSN-analysis-dashboard/actions" target="_blank"><img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/difronzo/OSN-analysis-dashboard/Tests?logo=github&style=for-the-badge"/></a></p>
 
 ## How to run the project?
 
